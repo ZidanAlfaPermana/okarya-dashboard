@@ -4,11 +4,27 @@ namespace App\Livewire\Pages;
 
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Detail extends Component
 {
+    use WithFileUploads, WithPagination;
+
+    public array $gambarUrl = [];
+
+    public array $existingGambar = [];
+
+    public $gambarUploads = [];
+
+    public array $hapusGambarIds = [];
+
+    public $gambar = [];
+
     public string $kodeBarang;
 
     public int $idBarang;
@@ -23,7 +39,6 @@ class Detail extends Component
 
     public string $penyimpanan = '';
 
-    public array $gambarUrl = [];
     public string $gambarQrCode = '';
 
     public int $harga = 0;
@@ -61,8 +76,57 @@ class Detail extends Component
             ->get(config('api.base_url').'/kategori');
 
         if ($response->successful()) {
-            $this->kategoriList = $response->json('data', []);
+            $this->kategoriList = $response->json('data.data', []);
         }
+    }
+
+    private function buildPaginator(array $apiResponse): LengthAwarePaginator
+    {
+        $perPage = 5;
+
+        $items = Collection::make($apiResponse['data'] ?? []);
+
+        return new LengthAwarePaginator(
+            items: $items,
+            total: $apiResponse['total'] ?? $items->count(),
+            perPage: $apiResponse['per_page'] ?? $perPage,
+            currentPage: $apiResponse['current_page'] ?? $this->getPage(),
+            options: [
+                'path' => url()->current(),
+            ]
+        );
+    }
+
+    private function fetchRating()
+    {
+        $params = [
+            'page' => $this->getPage(),
+            'id_barang' => $this->idBarang,
+        ];
+
+        $response = Http::withToken(session('api_token'))
+            ->get(config('api.base_url').'/rating', $params);
+
+        if ($response->failed()) {
+            return [];
+        }
+
+        return $response->json()['data'] ?? [];
+    }
+
+    public function removeGambarBaru(int $index): void
+    {
+        if (isset($this->gambar[$index])) {
+            unset($this->gambar[$index]);
+            $this->gambar = array_values($this->gambar);
+        }
+    }
+
+    public function removeExistingGambar(int $index, int $idGambar): void
+    {
+        $this->hapusGambarIds[] = $idGambar;
+        unset($this->existingGambar[$index]);
+        $this->existingGambar = array_values($this->existingGambar);
     }
 
     private function loadProduk(): void
@@ -76,7 +140,7 @@ class Detail extends Component
             return;
         }
 
-        $data = $response->json('data.0', []);
+        $data = $response->json('data.data.0', []);
         if (empty($data)) {
             return;
         }
@@ -86,6 +150,8 @@ class Detail extends Component
         $this->harga = (int) ($data['harga'] ?? 0);
         $this->stok = (int) ($data['stok'] ?? 0);
         $this->penyimpanan = $data['penyimpanan'] ?? '';
+
+        $this->existingGambar = $data['gambar'] ?? [];
 
         $this->idKategori = $data['id_kategori'] ?? 0;
         $this->namaKategori = $data['kategori']['nama_kategori'] ?? 'Tanpa Kategori';
@@ -125,12 +191,18 @@ class Detail extends Component
         } else {
             $this->isEditing = false;
             $this->resetValidation();
+            $this->gambar = [];
+            $this->hapusGambarIds = [];
             $this->loadProduk();
         }
     }
 
     public function save(): void
     {
+        $this->validate([
+            'gambar.*' => 'image|max:2048',
+        ]);
+
         $formattedSpecs = [];
         foreach ($this->specList as $spec) {
             if (! empty($spec['label'])) {
@@ -151,7 +223,30 @@ class Detail extends Component
             ]);
 
         if ($response->successful()) {
+
+            foreach ($this->hapusGambarIds as $idHapus) {
+                Http::withToken(session('api_token'))
+                    ->delete(config('api.base_url')."/gambar/{$idHapus}");
+            }
+
+            if (! empty($this->gambar)) {
+                $imageRequest = Http::withToken(session('api_token'));
+                foreach ($this->gambar as $file) {
+                    $imageRequest->attach(
+                        'gambar[]',
+                        file_get_contents($file->getRealPath()),
+                        $file->getClientOriginalName()
+                    );
+                }
+                $imageRequest->post(config('api.base_url').'/gambar', [
+                    'id_barang' => $this->idBarang,
+                ]);
+            }
+
             $this->isEditing = false;
+            $this->gambar = [];
+            $this->hapusGambarIds = [];
+
             $this->redirect(config('app.url')."/produk/detail/{$this->kodeBarang}");
             session()->flash('success', 'Produk berhasil diperbarui.');
         } else {
@@ -170,8 +265,19 @@ class Detail extends Component
         }
     }
 
+    public function updatedGambarUploads(): void
+    {
+        foreach ($this->gambarUploads as $file) {
+            $this->gambar[] = $file;
+        }
+        $this->gambarUploads = [];
+    }
+
     public function render(): View|Factory|\Illuminate\View\View
     {
-        return view('livewire.pages.data.detail');
+        $apiResponse = $this->fetchRating();
+        $rating = $this->buildPaginator($apiResponse);
+
+        return view('livewire.pages.data.detail', ['rating' => $rating]);
     }
 }

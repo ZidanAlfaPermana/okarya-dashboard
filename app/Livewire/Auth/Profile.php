@@ -2,52 +2,39 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class Profile extends Component
 {
     public string $name = '';
+
     public string $email = '';
+
     public $email_verified_at;
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     public function mount(): void
     {
-        $user = auth()->user();
-        $this->name = $user->name;
-        $this->email = $user->email;
-        $this->email_verified_at = $user->email_verified_at;
+        $this->fetchProfile();
     }
 
-    public function updateProfile(): void
+    public function fetchProfile(): void
     {
-        $user = auth()->user();
-
-        $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'min:8', 'confirmed'],
-        ]);
-
-        $userData = [
-            'name' => $this->name,
-            'email' => $this->email,
-        ];
-
-        if (!empty($this->password)) {
-            $userData['password'] = Hash::make($this->password);
+        $response = Http::withToken(session('api_token'))
+            ->get(config('api.base_url').'/user/profile');
+        $data = $response->json()['data'];
+        if ($response->ok() || $response->successful()) {
+            $this->name = $data['name'];
+            $this->email = $data['email'];
+            $this->email_verified_at = $data['email_verified_at'];
+        } else {
+            $this->name = '';
+            $this->email = '';
         }
-
-        User::where('id', $user->id)->update($userData);
-
-        $this->password = '';
-        $this->password_confirmation = '';
-
-        session()->flash('success', 'Profil berhasil diperbarui.');
     }
 
     public function render()

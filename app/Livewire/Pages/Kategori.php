@@ -14,6 +14,8 @@ class Kategori extends Component
 
     public string $search = '';
 
+    public string $status = '';
+
     public function updatingSearch(): void
     {
         $this->resetPage();
@@ -36,18 +38,33 @@ class Kategori extends Component
      */
     public function render()
     {
-        $perPage = 15;
+        $perPage = 10;
+        $currentPage = $this->getPage();
 
-        $response = Http::withToken(session('api_token'))->get(config('api.base_url').'/kategori');
+        $params = [
+            'page' => $currentPage,
+        ];
 
-        $data = $response->json();
+        if (! empty($this->search)) {
+            $params['nama_kategori'] = $this->search;
+        }
+
+        if (! empty($this->status)) {
+            $params['status'] = $this->status;
+        }
+
+        $response = Http::withToken(session('api_token'))
+            ->get(config('api.base_url').'/kategori', $params);
+
+        $data = $response->json()['data'] ?? [];
         $items = collect($data['data'] ?? []);
 
         $kategori = new LengthAwarePaginator(
             $items,
             $data['total'] ?? $items->count(),
-            $perPage,
-            options: ['path' => url()->current()]
+            $data['per_page'] ?? $perPage,
+            $currentPage,
+            ['path' => url()->current()]
         );
 
         return view('livewire.pages.kategori', [

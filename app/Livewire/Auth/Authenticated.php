@@ -22,7 +22,7 @@ class Authenticated extends Component
 
         Session::regenerate();
 
-        $response = Http::post('http://localhost:8001/api/user/token', [
+        $response = Http::post(config('api.base_url').'/user/token', [
             'email' => $this->form->email,
             'password' => $this->form->password,
         ]);

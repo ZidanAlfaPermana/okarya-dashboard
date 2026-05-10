@@ -17,7 +17,7 @@ class Logout
         Session::invalidate();
         Session::regenerateToken();
         $token = session('api_token');
-        Http::withToken($token)->post('http://localhost:8001/api/user/revoke-token');
+        Http::withToken($token)->post(config('api.base_url').'/user/revoke-token');
         session()->forget('api_token');
     }
 }

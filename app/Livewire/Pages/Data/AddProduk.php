@@ -4,12 +4,17 @@ namespace App\Livewire\Pages\Data;
 
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class AddProduk extends Component
 {
+    use WithFileUploads;
+
     public $kodeBarang;
 
     public string $nama = '';
+
+    public $gambarUploads = [];
 
     public int $idKategori;
 
@@ -17,7 +22,7 @@ class AddProduk extends Component
 
     public string $penyimpanan = '';
 
-    public string $gambarUrl = '';
+    public $gambar = [];
 
     public int $harga = 0;
 
@@ -44,7 +49,7 @@ class AddProduk extends Component
             ->get(config('api.base_url').'/kategori');
 
         if ($response->successful()) {
-            $this->kategoriList = $response->json('data', []);
+            $this->kategoriList = $response->json('data.data', []);
         }
     }
 
@@ -59,8 +64,23 @@ class AddProduk extends Component
         $this->specList = array_values($this->specList);
     }
 
+    public function removeGambar(int $index): void
+    {
+        if (isset($this->gambar[$index])) {
+            unset($this->gambar[$index]);
+            $this->gambar = array_values($this->gambar);
+        }
+    }
+
     public function save(): void
     {
+        $this->validate([
+            'gambar' => 'required|array|min:1',
+            'gambar.*' => 'image|max:2048',
+        ], [
+            'gambar.required' => 'Minimal upload 1 gambar produk.',
+        ]);
+
         $formattedSpecs = [];
         foreach ($this->specList as $spec) {
             if (! empty($spec['label'])) {
@@ -81,12 +101,37 @@ class AddProduk extends Component
             ]);
 
         if ($response->successful()) {
-            $this->redirect(config('app.url')."/produk/detail/{$this->kodeBarang}");
 
-            session()->flash('success', 'Produk berhasil diperbarui.');
+            $idBarang = $response->json('data.id_barang');
+
+            if (! empty($this->gambar) && $idBarang) {
+                $imageRequest = Http::withToken(session('api_token'));
+
+                foreach ($this->gambar as $file) {
+                    $imageRequest->attach(
+                        'gambar[]',
+                        file_get_contents($file->getRealPath()),
+                        $file->getClientOriginalName()
+                    );
+                }
+
+                $imageRequest->post(config('api.base_url').'/gambar', [
+                    'id_barang' => $idBarang,
+                ]);
+            }
+            session()->flash('success', 'Produk dan Gambar berhasil ditambahkan.');
+            $this->redirect(config('app.url')."/produk/detail/{$this->kodeBarang}");
         } else {
             session()->flash('error', 'Gagal memperbarui produk. Pastikan semua data benar.');
         }
+    }
+
+    public function updatedGambarUploads(): void
+    {
+        foreach ($this->gambarUploads as $file) {
+            $this->gambar[] = $file;
+        }
+        $this->gambarUploads = [];
     }
 
     public function render()

@@ -41,7 +41,7 @@
                         <h1 class="text-xl font-extrabold text-gray-900">Detail Produk</h1>
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="grid grid-cols-2 md:flex items-center gap-2">
                         @if ($isEditing)
                             <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F0FDF0] text-[#07E200]"> Mode Edit </span>
                         @else
@@ -75,119 +75,155 @@
                         </button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                    <div class="space-y-4">
-                        <div class="bg-white border border-gray-100 rounded-2xl p-6">
-                            <div class="aspect-square rounded-xl bg-gray-50 flex items-center justify-center mb-4 relative overflow-hidden">
-                                @if ($stok == 0)
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="space-y-4 {{ !$isEditing ? 'lg:sticky lg:top-16 lg:self-start' : '' }}">
+                        <div class="bg-white border border-gray-100 rounded-2xl p-6" x-data="{ activeIndex: 0 }">
+
+                            <div class="aspect-square rounded-xl bg-gray-50 flex items-center justify-center mb-4 relative overflow-hidden border {{ $isEditing ? 'border-2 border-dashed border-gray-200' : '' }}">
+
+                                @if ($stok == 0 && !$isEditing)
                                     <div class="absolute top-3 left-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-r-full z-10"> Habis </div>
-                                @elseif ($stok <= 10)
+                                @elseif ($stok <= 10 && !$isEditing)
                                     <div class="absolute top-3 left-0 text-white text-[10px] font-bold px-3 py-1 rounded-r-full bg-[#F97316] z-10"> Menipis </div>
                                 @endif
 
-                                    <div wire:loading.flex class="justify-center py-10">
-                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#07E200]"></div>
-                                    </div>
-                                @if($imageMode == 'produk')
-                                    @if($gambarUrl)
-                                        <div wire:loading.remove class="w-full h-full">
-                                            @if(count($gambarUrl) > 0)
-                                                <div x-data="{ activeSlide: 0, slides: {{ json_encode($gambarUrl) }} }" class="relative w-full h-full group">
+                                <div wire:loading.flex wire:target="changeImageMode, setMode" class="justify-center py-10 z-20 absolute inset-0 bg-white/50 backdrop-blur-sm items-center">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#07E200]"></div>
+                                </div>
 
+                                @if($imageMode == 'produk')
+
+                                    @if(!$isEditing)
+                                        @if(count($gambarUrl) > 0)
+                                            <div wire:loading.remove wire:target="changeImageMode, setMode" class="w-full h-full">
+                                                <div x-data="{ activeSlide: 0, slides: {{ json_encode($gambarUrl) }} }" class="relative w-full h-full group">
                                                     <div class="relative w-full h-full overflow-hidden rounded-xl">
                                                         <template x-for="(slide, index) in slides" :key="index">
-                                                            <div x-show="activeSlide === index"
-                                                                 x-transition:enter="transition ease-out duration-300"
-                                                                 x-transition:enter-start="opacity-0 transform scale-95"
-                                                                 x-transition:enter-end="opacity-100 transform scale-100"
-                                                                 class="absolute inset-0">
+                                                            <div x-show="activeSlide === index" x-transition.opacity class="absolute inset-0">
                                                                 <img :src="slide" class="w-full h-full object-cover">
                                                             </div>
                                                         </template>
                                                     </div>
-
                                                     @if(count($gambarUrl) > 1)
-                                                        <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1"
-                                                                class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                                                        </button>
-                                                        <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1"
-                                                                class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                                                        </button>
-
+                                                        <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg></button>
+                                                        <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/80 text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></button>
                                                         <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/10 backdrop-blur-sm px-2 py-1 rounded-full">
                                                             <template x-for="(slide, index) in slides" :key="index">
-                                                                <button @click="activeSlide = index"
-                                                                        :class="activeSlide === index ? 'bg-[#07E200] w-4' : 'bg-white/60 w-1.5'"
-                                                                        class="h-1.5 rounded-full transition-all duration-300"></button>
+                                                                <button @click="activeSlide = index" :class="activeSlide === index ? 'bg-[#07E200] w-4' : 'bg-white/60 w-1.5'" class="h-1.5 rounded-full transition-all duration-300"></button>
                                                             </template>
                                                         </div>
                                                     @endif
                                                 </div>
+                                            </div>
+                                        @else
+                                            <div class="w-28 h-28 rounded-2xl bg-yellow-50 flex items-center justify-center">
+                                                <svg class="w-16 h-16 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                            </div>
+                                        @endif
+
+                                    @else
+                                        <div class="w-full h-full">
+                                            @if(count($existingGambar) === 0 && count($gambar) === 0)
+                                                <div class="flex flex-col items-center justify-center h-full">
+                                                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                    <p class="text-[10px] font-medium text-gray-400">Belum Ada Foto</p>
+                                                </div>
                                             @else
-                                                <div class="w-full h-full flex items-center justify-center bg-yellow-50">
-                                                    <svg class="w-16 h-16 text-yellow-300" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                    </svg>
+                                                @php $globalIndex = 0; @endphp
+
+                                                @foreach($existingGambar as $index => $img)
+                                                    <div wire:key="main-old-{{ $img['gambar_id'] }}" x-show="activeIndex === {{ $globalIndex }}" class="absolute inset-0 w-full h-full transition-opacity duration-300">
+                                                        <img src="{{ $img['gambar'] }}" class="w-full h-full object-cover">
+                                                        <button type="button" wire:click="removeExistingGambar({{ $index }}, {{ $img['gambar_id'] }})" @click="activeIndex = 0" class="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-red-500 text-gray-700 hover:text-white rounded-lg transition-all z-10"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                                                    </div>
+                                                    @php $globalIndex++; @endphp
+                                                @endforeach
+
+                                                @foreach($gambar as $index => $img)
+                                                    <div wire:key="main-new-{{ $index }}" x-show="activeIndex === {{ $globalIndex }}" class="absolute inset-0 w-full h-full transition-opacity duration-300">
+                                                        <img src="{{ $img->temporaryUrl() }}" class="w-full h-full object-cover">
+                                                        <button type="button" wire:click="removeGambarBaru({{ $index }})" @click="activeIndex = 0" class="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-red-500 text-gray-700 hover:text-white rounded-lg transition-all z-10"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                                                        <span class="absolute top-2 left-2 px-2 py-1 bg-[#07E200]/80 text-[9px] font-bold text-white rounded">Baru</span>
+                                                    </div>
+                                                    @php $globalIndex++; @endphp
+                                                @endforeach
+
+                                                <div wire:loading wire:target="gambar" class="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+                                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#07E200] mb-2"></div>
+                                                    <p class="text-xs font-bold text-gray-600">Menyiapkan gambar...</p>
                                                 </div>
                                             @endif
                                         </div>
-                                    @else
-                                        <div wire:loading.remove>
-                                            <div class="w-28 h-28 rounded-2xl bg-yellow-50 flex items-center justify-center">
-                                                <svg class="w-16 h-16 text-yellow-300" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg>
-                                            </div>
-                                        </div>
                                     @endif
+
                                 @elseif($imageMode == 'qrcode')
-                                    <div wire:loading.remove>
-                                        <img alt="" src="{{ $gambarQrCode }}" class="w-full h-full object-cover">
-                                    </div>
-                                @else
-                                    <div wire:loading.remove>
-                                        <div class="w-28 h-28 rounded-2xl bg-yellow-50 flex items-center justify-center">
-                                            <svg class="w-16 h-16 text-yellow-300" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                            </svg>
-                                        </div>
+                                    <div wire:loading.remove wire:target="changeImageMode, setMode" class="w-full h-full">
+                                        @if($gambarQrCode)
+                                            <img alt="QR Code" src="{{ $gambarQrCode }}" class="w-full h-full object-contain p-4">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400 text-xs">QR Code tidak tersedia</div>
+                                        @endif
                                     </div>
                                 @endif
                             </div>
+
+                            @if($isEditing && (count($existingGambar) > 0 || count($gambar) > 0))
+                                <div class="flex gap-2 overflow-x-auto pb-2 mb-4 snap-x custom-scrollbar">
+                                    @php $thumbnailIndex = 0; @endphp
+
+                                    @foreach($existingGambar as $img)
+                                        <div wire:key="thumb-old-{{ $img['gambar_id'] }}" @click="activeIndex = {{ $thumbnailIndex }}" class="shrink-0 w-12 h-12 rounded-lg cursor-pointer overflow-hidden border-2 transition-all duration-200" :class="activeIndex === {{ $thumbnailIndex }} ? 'border-[#07E200] opacity-100' : 'border-transparent opacity-50 hover:opacity-100'">
+                                            <img src="{{ $img['gambar'] }}" class="w-full h-full object-cover">
+                                        </div>
+                                        @php $thumbnailIndex++; @endphp
+                                    @endforeach
+
+                                    @foreach($gambar as $index => $img)
+                                        <div wire:key="thumb-new-{{ $index }}" @click="activeIndex = {{ $thumbnailIndex }}" class="shrink-0 w-12 h-12 rounded-lg cursor-pointer overflow-hidden border-2 border-[#07E200] transition-all duration-200" :class="activeIndex === {{ $thumbnailIndex }} ? 'opacity-100' : 'opacity-50 hover:opacity-100'">
+                                            <img src="{{ $img->temporaryUrl() }}" class="w-full h-full object-cover">
+                                        </div>
+                                        @php $thumbnailIndex++; @endphp
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @error('gambar.*') <p class="text-[10px] text-red-500 mt-1 mb-2 text-center">{{ $message }}</p> @enderror
+
                             @if(!$isEditing)
                                 <div class="flex justify-center items-center gap-1">
                                     <div class="bg-gray-100 rounded-xl p-1 flex-shrink-0">
-                                        <button
-                                            wire:click="changeImageMode('produk')" @class(['p-2 rounded-lg transition-all', 'bg-[#07E200] text-white shadow-sm' => $imageMode === 'produk', 'text-gray-500 hover:text-gray-700' => $imageMode !== 'produk'])>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                 stroke-width="1.5" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                      d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
-                                            </svg>
+                                        <button wire:click="changeImageMode('produk')" @class(['p-2 rounded-lg transition-all', 'bg-[#07E200] text-white shadow-sm' => $imageMode === 'produk', 'text-gray-500 hover:text-gray-700' => $imageMode !== 'produk'])>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
                                         </button>
-                                        <button
-                                            wire:click="changeImageMode('qrcode')" @class(['p-2 rounded-lg transition-all', 'bg-[#07E200] text-white shadow-sm' => $imageMode === 'qrcode', 'text-gray-500 hover:text-gray-700' => $imageMode !== 'qrcode'])>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                 stroke-width="1.5" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                      d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                      d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z"/>
-                                            </svg>
+                                        <button wire:click="changeImageMode('qrcode')" @class(['p-2 rounded-lg transition-all', 'bg-[#07E200] text-white shadow-sm' => $imageMode === 'qrcode', 'text-gray-500 hover:text-gray-700' => $imageMode !== 'qrcode'])>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z"/></svg>
                                         </button>
                                     </div>
                                 </div>
                             @endif
 
                             @if ($isEditing)
-                                <button class="w-full text-xs font-semibold text-gray-500 border border-dashed border-gray-300 py-2.5 rounded-xl hover:border-[#07E200] hover:text-[#07E200] transition-colors flex items-center justify-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                        <circle cx="12" cy="13" r="3" />
-                                    </svg> Ganti Foto
-                                </button>
+                                <div x-data="imageCompressor()" class="relative mt-2">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/jpeg, image/png, image/webp, image/jpg"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
+                                        @change="handleFiles"
+                                        x-bind:disabled="isUploading"
+                                    >
+                                    <button type="button" class="w-full text-xs font-semibold text-gray-500 border border-dashed border-gray-300 py-2.5 rounded-xl hover:border-[#07E200] hover:text-[#07E200] transition-colors flex items-center justify-center gap-1.5" :class="isUploading ? 'bg-gray-50 opacity-50' : ''">
+
+                                        <svg x-show="!isUploading" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+
+                                        <svg x-show="isUploading" class="w-4 h-4 animate-spin text-[#07E200]" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+
+                                        <span x-text="isUploading ? `Mengompres & Mengunggah... (${uploadProgress}%)` : 'Tambah Foto Baru'"></span>
+                                    </button>
+                                </div>
                             @endif
                         </div>
 
@@ -387,8 +423,8 @@
                         </div>
 
                         <div class="bg-white border border-gray-100 rounded-2xl p-6">
-                            <p class="text-sm font-bold text-gray-900 mb-4">Statistik & Rating</p>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <p class="text-sm font-bold text-gray-900 mb-4">Rating</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div class="bg-gray-50 rounded-xl p-3.5 text-center">
                                     <p class="text-xl font-extrabold text-gray-900">{{ $statistik['rating_avg'] ?? '0' }}</p>
                                     <p class="text-[11px] text-gray-400 font-medium mt-0.5">Rating Avg</p>
@@ -397,19 +433,68 @@
                                     <p class="text-xl font-extrabold text-[#07E200]">{{ $statistik['rating_count'] ?? '0' }}</p>
                                     <p class="text-[11px] text-gray-400 font-medium mt-0.5">Ulasan</p>
                                 </div>
-                                <div class="bg-gray-50 rounded-xl p-3.5 text-center">
-                                    <p class="text-xl font-extrabold text-gray-900">{{ $stok }}</p>
-                                    <p class="text-[11px] text-gray-400 font-medium mt-0.5">Stok Aktif</p>
-                                </div>
-                                <div class="bg-gray-50 rounded-xl p-3.5 text-center">
-                                    <p class="text-xl font-extrabold text-gray-900">#1</p>
-                                    <p class="text-[11px] text-gray-400 font-medium mt-0.5">Populer</p>
-                                </div>
                             </div>
                         </div>
+                        @if(!$isEditing)
+                            <div class="bg-white border border-gray-100 rounded-2xl p-6">
+                                <p class="text-sm font-bold text-gray-900 mb-4">Rating Pengguna</p>
+                                <div wire:loading.flex class="justify-center py-10">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#07E200]"></div>
+                                </div>
+                                <div wire:loading.remove>
+                                    <div class="grid grid-cols-1 gap-3">
+                                        @forelse($rating as $ratings)
+                                            <div class="border-b py-5 items-center">
+                                                <div class="flex justify-between items-center">
+                                                    <div class="flex justify-center items-center gap-2">
+                                                        <p class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-[#07FF00]"> {{ substr($ratings['user']['name'], 0, 1) }} </p>
+                                                        <div class="grid grid-cols-1">
+                                                            <p class="text-[13px] text-black font-medium text-center mt-0.5">{{ $ratings['user']['name'] }}</p>
+                                                            <p class="text-[11px] text-gray-200 font-medium text-center">{{ date('d-m-Y', strtotime($ratings['updated_at'])) }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex text-center items-center gap-1">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                             fill="currentColor" class="size-3 text-[#F1FF00]">
+                                                            <path fill-rule="evenodd"
+                                                                  d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+                                                                  clip-rule="evenodd"/>
+                                                        </svg>
+                                                        <p class="text-[11px] text-black font-medium mt-0.5">{{ $ratings['rating'] }}/5</p>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="h-12 mt-3 text-start grow overflow-y-scroll [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-400">
+                                                    <p>{{ $ratings['keterangan'] }}</p>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="flex flex-col col-span-full pt-10 justify-center items-center text-center gap-2 w-full">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10 text-gray-500">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                                </svg>
+                                                <h3 class="col-span-full text-gray-500 text-2xl">Rating Kosong</h3>
+                                                <p class="col-span-full text-gray-400">Belum ada orang yang merating produk ini.</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                    @if($rating->hasPages())
+                                        <div class="mt-6 pt-5 border-t border-gray-100">
+                                            {{ $rating->links() }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </main>
         </div>
     </div>
+    @include('scripts.image_compresor')
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+    </style>
 </div>

@@ -22,7 +22,7 @@
         <div class="text-center border-b-2 border-black pb-4 mb-6">
             <h1 class="text-2xl font-black uppercase tracking-tighter">Form Pengisian Data Barang</h1>
             <p class="text-sm font-medium text-gray-600">Toko Vohisma - Inventaris Siswa SMKN 5 Malang</p>
-            <p class="text-[10px] text-gray-400 mt-1 italic font-mono uppercase tracking-widest">Halaman Nomor: {{ $startNumber }} - {{ $startNumber + 19 }}</p>
+            <p class="print:hidden text-[10px] text-gray-400 mt-1 italic font-mono uppercase tracking-widest">Halaman Nomor: {{ $startNumber }} - {{ $startNumber + 19 }}</p>
         </div>
 
         <table class="w-full border-collapse border border-black text-[11px]">
@@ -52,7 +52,7 @@
                     <td class="border border-black"></td>
                     <td class="border border-black"></td>
                     <td class="border border-black"></td>
-                    <td class="border border-black text-[9px] text-gray-400 px-1 text-center">Aktif / Draft</td>
+                    <td class="border border-black text-[9px] text-gray-700 px-1 text-center">Aktif / Draft</td>
                 </tr>
             @endfor
             </tbody>
@@ -69,7 +69,7 @@
 
     <style>
         @media print {
-            @page { size: landscape; margin: 1cm; }
+            @page { margin: 1cm; }
             body { -webkit-print-color-adjust: exact; }
         }
     </style>

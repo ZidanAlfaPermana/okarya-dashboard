@@ -62,21 +62,79 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                     <div class="space-y-4">
-                        <div class="bg-white border border-gray-100 rounded-2xl p-6">
+                        <div class="bg-white border border-gray-100 rounded-2xl p-6" x-data="{ activeIndex: 0 }">
+
                             <div class="aspect-square rounded-xl bg-gray-50 flex items-center justify-center mb-4 relative overflow-hidden border-2 border-dashed border-gray-200">
-                                <div class="text-center p-4">
-                                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <p class="text-[10px] font-medium text-gray-400">Preview Foto Produk</p>
-                                </div>
+
+                                @if(count($gambar) === 0)
+                                    <div class="text-center p-4">
+                                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-[10px] font-medium text-gray-400">Preview Foto Produk</p>
+                                    </div>
+                                @else
+                                    @foreach($gambar as $index => $img)
+                                        <div x-show="activeIndex === {{ $index }}" class="absolute inset-0 w-full h-full transition-opacity duration-300">
+                                            <img src="{{ $img->temporaryUrl() }}"
+                                                 class="w-full h-full object-cover"
+                                                 alt="Preview {{ $index }}">
+
+                                            <button type="button"
+                                                    wire:click="removeGambar({{ $index }})"
+                                                    @click="activeIndex = 0"
+                                                    class="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm hover:bg-red-500 text-gray-700 hover:text-white rounded-lg shadow-sm border border-gray-200 transition-all z-10"
+                                                    title="Hapus gambar ini">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    @endforeach
+
+                                    <div wire:loading wire:target="gambar" class="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#07E200] mb-2"></div>
+                                        <p class="text-xs font-bold text-gray-600">Menyiapkan gambar...</p>
+                                    </div>
+                                @endif
                             </div>
-                            <button class="w-full text-xs font-semibold text-gray-500 border border-dashed border-gray-300 py-2.5 rounded-xl hover:border-[#07E200] hover:text-[#07E200] transition-colors flex items-center justify-center gap-1.5">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                    <circle cx="12" cy="13" r="3" />
-                                </svg> Unggah Foto
-                            </button>
+
+                            @if(count($gambar) > 0)
+                                <div class="flex gap-2 overflow-x-auto pb-2 mb-4 snap-x custom-scrollbar">
+                                    @foreach($gambar as $index => $img)
+                                        <div @click="activeIndex = {{ $index }}"
+                                             class="shrink-0 w-16 h-16 rounded-lg cursor-pointer overflow-hidden border-2 transition-all duration-200 snap-center"
+                                             :class="activeIndex === {{ $index }} ? 'border-[#07E200] opacity-100' : 'border-transparent opacity-50 hover:opacity-100'">
+                                            <img alt="" src="{{ $img->temporaryUrl() }}" class="w-full h-full object-cover">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @error('gambar.*') <p class="text-[10px] text-red-500 mb-3 text-center">{{ $message }}</p> @enderror
+                            @error('gambar') <p class="text-[10px] text-red-500 mb-3 text-center">{{ $message }}</p> @enderror
+
+                            <div x-data="imageCompressor()" class="relative">
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/jpeg, image/png, image/webp, image/jpg"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
+                                    @change="handleFiles"
+                                    x-bind:disabled="isUploading"
+                                >
+                                <button type="button" class="w-full text-xs font-semibold text-gray-500 border border-dashed border-gray-300 py-2.5 rounded-xl hover:border-[#07E200] hover:text-[#07E200] transition-colors flex items-center justify-center gap-1.5" :class="isUploading ? 'bg-gray-50 opacity-50' : ''">
+
+                                    <svg x-show="!isUploading" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+
+                                    <svg x-show="isUploading" class="w-4 h-4 animate-spin text-[#07E200]" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+
+                                    <span x-text="isUploading ? `Mengompres & Mengunggah... (${uploadProgress}%)` : 'Tambah Foto Baru'"></span>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-gray-100 rounded-2xl p-5 space-y-3">
@@ -227,4 +285,11 @@
             </main>
         </div>
     </div>
+    @include('scripts.image_compresor')
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
 </div>

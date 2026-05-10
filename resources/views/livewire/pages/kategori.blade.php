@@ -55,6 +55,12 @@
                         </div>
                         <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari nama kategori" class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 transition-all" />
                     </div>
+                    <select wire:model.live="status" class="text-sm border border-gray-200 rounded-xl bg-gray-50 px-3 py-2.5 outline-none focus:border-[#07E200] sm:w-44">
+                        <option value="">Semua Status</option>
+                        <option value="aktif">Aktif</option>
+                        <option value="draft">Draft</option>
+                        <option value="nonaktif">Nonaktif</option>
+                    </select>
                 </div>
 
                 <div wire:loading.flex class="justify-center py-10">

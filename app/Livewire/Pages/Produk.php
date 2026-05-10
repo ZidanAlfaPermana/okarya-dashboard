@@ -56,24 +56,28 @@ class Produk extends Component
 
     private function fetchProduk(): array
     {
-        if ($this->searchBy == 'kode_barang') {
-            $response = Http::withToken(session('api_token'))
-                ->get(config('api.base_url').'/barang', [
-                    'kode_barang' => $this->search,
-                ]);
-        } else {
-            $response = Http::withToken(session('api_token'))
-                ->get(config('api.base_url').'/barang', [
-                    'nama_barang' => $this->search,
-                ]);
+        $perPage = $this->viewMode === 'card' ? 12 : 15;
+
+        $params = [
+            'page' => $this->getPage(),
+        ];
+
+        if (!empty($this->search)) {
+            $params[$this->searchBy] = $this->search;
         }
 
+        if (!empty($this->kategori)) {
+            $params['id_kategori'] = $this->kategori;
+        }
+
+        $response = Http::withToken(session('api_token'))
+            ->get(config('api.base_url').'/barang', $params);
 
         if ($response->failed()) {
-            return ['data' => [], 'meta' => [], 'kategori_list' => []];
+            return [];
         }
 
-        return $response->json();
+        return $response->json()['data'] ?? [];
     }
 
     private function fetchKategori(): array
@@ -86,23 +90,22 @@ class Produk extends Component
             return ['data' => []];
         }
 
-        return $response->json()['data'];
+        return $response->json()['data']['data'];
     }
 
     private function buildPaginator(array $apiResponse): LengthAwarePaginator
     {
         $perPage = $this->viewMode === 'card' ? 12 : 15;
-        $meta = $apiResponse['meta'] ?? [];
+
         $items = Collection::make($apiResponse['data'] ?? []);
 
         return new LengthAwarePaginator(
             items: $items,
-            total: $meta['total'] ?? $items->count(),
-            perPage: $meta['per_page'] ?? $perPage,
-            currentPage: $meta['current_page'] ?? $this->getPage(),
+            total: $apiResponse['total'] ?? $items->count(),
+            perPage: $apiResponse['per_page'] ?? $perPage,
+            currentPage: $apiResponse['current_page'] ?? $this->getPage(),
             options: [
-                'path' => request()->url(),
-                'query' => request()->query(),
+                'path' => url()->current(),
             ]
         );
     }

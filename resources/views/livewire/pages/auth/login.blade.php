@@ -21,7 +21,7 @@
                 </h1>
                 <p class="text-white/50 text-sm leading-relaxed max-w-sm"> Dashboard lengkap untuk manajemen produk, pesanan, stok, dan pelanggan toko barang kamu dalam satu tempat. </p>
             </div>
-            <p class="relative z-10 text-white/25 text-xs">© 2025 SMKN 5 Malang. All rights reserved.</p>
+            <p class="relative z-10 text-white/25 text-xs">© {{ date('Y') }} SMKN 5 Malang. All rights reserved.</p>
         </div>
         <div class="flex-1 flex items-center justify-center px-6 py-12">
             <div class="w-full max-w-md">
