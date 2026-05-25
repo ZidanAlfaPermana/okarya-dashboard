@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Pages\Data;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\BarangService;
+use App\Services\KategoriService;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -16,19 +18,19 @@ class AddProduk extends Component
 
     public $gambarUploads = [];
 
-    public int $idKategori;
+    public $idKategori;
 
     public string $namaKategori = '';
 
     public string $penyimpanan = '';
 
-    public $gambar = [];
+    public array $gambar = [];
 
     public int $harga = 0;
 
     public int $stok = 0;
 
-    public string $status;
+    public string $status = 'draft';
 
     public array $specList = [];
 
@@ -38,19 +40,10 @@ class AddProduk extends Component
 
     public array $specification = [];
 
-    public function mount(): void
+    public function mount(KategoriService $kategoriService): void
     {
-        $this->fetchKategori();
-    }
-
-    private function fetchKategori(): void
-    {
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/kategori');
-
-        if ($response->successful()) {
-            $this->kategoriList = $response->json('data.data', []);
-        }
+        $response = $kategoriService->getKategori([], 99999);
+        $this->kategoriList = $response['data']->items();
     }
 
     public function addSpec(): void
@@ -72,15 +65,16 @@ class AddProduk extends Component
         }
     }
 
-    public function save(): void
+    public function updatedGambarUploads(): void
     {
-        $this->validate([
-            'gambar' => 'required|array|min:1',
-            'gambar.*' => 'image|max:2048',
-        ], [
-            'gambar.required' => 'Minimal upload 1 gambar produk.',
-        ]);
+        foreach ($this->gambarUploads as $file) {
+            $this->gambar[] = $file;
+        }
+        $this->gambarUploads = [];
+    }
 
+    public function save(BarangService $barangService): void
+    {
         $formattedSpecs = [];
         foreach ($this->specList as $spec) {
             if (! empty($spec['label'])) {
@@ -88,50 +82,28 @@ class AddProduk extends Component
             }
         }
 
-        $response = Http::withToken(session('api_token'))
-            ->post(config('api.base_url').'/barang', [
+        try {
+            $barangService->createItem([
                 'nama_barang' => $this->nama,
                 'kode_barang' => $this->kodeBarang,
-                'id_kategori' => $this->idKategori,
-                'harga' => $this->harga,
-                'stok' => $this->stok,
+                'id_kategori' => (int) $this->idKategori,
+                'harga' => (int) $this->harga,
+                'stok' => (int) $this->stok,
                 'penyimpanan' => $this->penyimpanan,
                 'specification' => $formattedSpecs,
-                'status' => $this->status,
+                'status' => $this->status ?: 'draft',
+                'gambar' => $this->gambar,
             ]);
 
-        if ($response->successful()) {
-
-            $idBarang = $response->json('data.id_barang');
-
-            if (! empty($this->gambar) && $idBarang) {
-                $imageRequest = Http::withToken(session('api_token'));
-
-                foreach ($this->gambar as $file) {
-                    $imageRequest->attach(
-                        'gambar[]',
-                        file_get_contents($file->getRealPath()),
-                        $file->getClientOriginalName()
-                    );
-                }
-
-                $imageRequest->post(config('api.base_url').'/gambar', [
-                    'id_barang' => $idBarang,
-                ]);
-            }
             session()->flash('success', 'Produk dan Gambar berhasil ditambahkan.');
-            $this->redirect(config('app.url')."/produk/detail/{$this->kodeBarang}");
-        } else {
+            $this->redirect("/produk/detail/{$this->kodeBarang}", navigate: true);
+
+        } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
+        } catch (\Exception $e) {
+            $this->redirect('/produk/', navigate: true);
             session()->flash('error', 'Gagal memperbarui produk. Pastikan semua data benar.');
         }
-    }
-
-    public function updatedGambarUploads(): void
-    {
-        foreach ($this->gambarUploads as $file) {
-            $this->gambar[] = $file;
-        }
-        $this->gambarUploads = [];
     }
 
     public function render()

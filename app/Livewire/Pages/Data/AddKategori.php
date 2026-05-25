@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Pages\Data;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\KategoriService;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class AddKategori extends Component
@@ -11,21 +12,23 @@ class AddKategori extends Component
 
     public string $deskripsi = '';
 
-    public string $status;
+    public string $status = '';
 
-    public function save(): void
+    public function save(KategoriService $kategoriService): void
     {
-        $response = Http::withToken(session('api_token'))
-            ->post(config('api.base_url').'/kategori', [
+        try {
+            $kategoriService->createKategori([
                 'nama_kategori' => $this->nama_kategori,
                 'deskripsi' => $this->deskripsi,
                 'status' => $this->status,
             ]);
 
-        if ($response->successful()) {
-            $this->redirect(config('app.url').'/kategori');
             session()->flash('success', 'Kategori berhasil ditambahkan.');
-        } else {
+            $this->redirect('/kategori', navigate: true);
+
+        } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
+        } catch (\Exception $e) {
             session()->flash('error', 'Gagal menambahkan Kategori. Pastikan semua data benar.');
         }
     }

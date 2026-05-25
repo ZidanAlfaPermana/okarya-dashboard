@@ -211,7 +211,7 @@
                                 <div class="sm:col-span-2 space-y-1.5">
                                     <label class="text-xs font-semibold text-gray-600">Nama Barang <span class="text-red-400">*</span></label>
                                     <input type="text" wire:model="nama" placeholder="Masukan nama lengkap barang" class="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all" />
-                                    @error('nama') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
+                                    @error('nama_barang') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div class="space-y-1.5">
@@ -222,13 +222,13 @@
                                             <option value="{{ $kat['id_kategori'] }}">{{ $kat['nama_kategori'] }}</option>
                                         @endforeach
                                     </select>
-                                    @error('idKategori') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
+                                    @error('id_kategori') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div class="space-y-1.5">
                                     <label class="text-xs font-semibold text-gray-600">Kode Barang / SKU <span class="text-red-400">*</span></label>
                                     <input type="text" wire:model="kodeBarang" placeholder="Contoh: BRG-001" class="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all" />
-                                    @error('kodeBarang') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
+                                    @error('kode_barang') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div class="sm:col-span-2 space-y-1.5">

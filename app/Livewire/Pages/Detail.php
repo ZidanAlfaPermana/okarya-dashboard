@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\Rating;
+use App\Services\BarangService;
+use App\Services\KategoriService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -57,11 +58,11 @@ class Detail extends Component
 
     public array $specification = [];
 
-    public function mount(string $id): void
+    public function mount(string $id, KategoriService $kategoriService, BarangService $barangService): void
     {
         $this->kodeBarang = $id;
-        $this->fetchKategori();
-        $this->loadProduk();
+        $this->loadKategori($kategoriService);
+        $this->loadProduk($barangService);
     }
 
     public function changeImageMode(string $mode): void
@@ -70,48 +71,11 @@ class Detail extends Component
         session(['image_view_mode' => $mode]);
     }
 
-    private function fetchKategori(): void
+    private function loadKategori(KategoriService $kategoriService): void
     {
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/kategori');
+        $response = $kategoriService->getKategori([], 100);
 
-        if ($response->successful()) {
-            $this->kategoriList = $response->json('data.data', []);
-        }
-    }
-
-    private function buildPaginator(array $apiResponse): LengthAwarePaginator
-    {
-        $perPage = 5;
-
-        $items = Collection::make($apiResponse['data'] ?? []);
-
-        return new LengthAwarePaginator(
-            items: $items,
-            total: $apiResponse['total'] ?? $items->count(),
-            perPage: $apiResponse['per_page'] ?? $perPage,
-            currentPage: $apiResponse['current_page'] ?? $this->getPage(),
-            options: [
-                'path' => url()->current(),
-            ]
-        );
-    }
-
-    private function fetchRating()
-    {
-        $params = [
-            'page' => $this->getPage(),
-            'id_barang' => $this->idBarang,
-        ];
-
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/rating', $params);
-
-        if ($response->failed()) {
-            return [];
-        }
-
-        return $response->json()['data'] ?? [];
+        $this->kategoriList = collect($response['data']->items())->toArray();
     }
 
     public function removeGambarBaru(int $index): void
@@ -129,47 +93,46 @@ class Detail extends Component
         $this->existingGambar = array_values($this->existingGambar);
     }
 
-    private function loadProduk(): void
+    private function loadProduk(BarangService $barangService): void
     {
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/barang?kode_barang='.$this->kodeBarang);
-        if ($response->failed()) {
+        $response = $barangService->getDaftarBarang(['kode_barang' => $this->kodeBarang], 1);
+        $data = $response['data']->first();
+
+        if (! $data) {
             session()->flash('error', 'Produk tidak ditemukan.');
-            $this->redirect(route('produk'), navigate: true);
+            $this->redirect('/produk', navigate: true);
 
             return;
         }
 
-        $data = $response->json('data.data.0', []);
-        if (empty($data)) {
-            return;
-        }
+        $this->nama = $data->nama_barang ?? '';
+        $this->idBarang = $data->id_barang ?? 0;
+        $this->harga = (int) ($data->harga ?? 0);
+        $this->stok = (int) ($data->stok ?? 0);
+        $this->penyimpanan = $data->penyimpanan ?? '';
 
-        $this->nama = $data['nama_barang'] ?? '';
-        $this->idBarang = $data['id_barang'] ?? 0;
-        $this->harga = (int) ($data['harga'] ?? 0);
-        $this->stok = (int) ($data['stok'] ?? 0);
-        $this->penyimpanan = $data['penyimpanan'] ?? '';
+        $this->existingGambar = $data->gambar ? $data->gambar->toArray() : [];
 
-        $this->existingGambar = $data['gambar'] ?? [];
+        $this->idKategori = $data->id_kategori ?? 0;
+        $this->namaKategori = $data->kategori->nama_kategori ?? 'Tanpa Kategori';
+        $this->status = $data->status ?? 'aktif';
 
-        $this->idKategori = $data['id_kategori'] ?? 0;
-        $this->namaKategori = $data['kategori']['nama_kategori'] ?? 'Tanpa Kategori';
-        $this->status = $data['status'] ?? '';
+        $this->gambarUrl = collect($this->existingGambar)->pluck('gambar')->toArray() ?? [];
+        $this->gambarQrCode = $data->qr_code_full_url ?? '';
 
-        $this->gambarUrl = collect($data['gambar'])->pluck('gambar')->toArray() ?? [];
-        $this->gambarQrCode = $data['qr_code_full_url'] ?? '';
+        $specs = is_string($data->specification) ? json_decode($data->specification, true) : ($data->specification ?? []);
+        $this->specification = $specs;
 
-        $this->specification = $data['specification'] ?? [];
         $this->specList = [];
-        $specs = $data['specification'] ?? [];
-        foreach ($specs as $key => $value) {
-            $this->specList[] = ['label' => $key, 'value' => $value];
+        if (is_array($specs)) {
+            foreach ($specs as $key => $value) {
+                $this->specList[] = ['label' => $key, 'value' => $value];
+            }
         }
 
         $this->statistik = [
-            'rating_avg' => $data['rating_avg'] ?? 0,
-            'rating_count' => $data['rating_count'] ?? 0,
+            'rating_avg' => $data->rating_avg ?? 0,
+            'rating_count' => $data->rating_count ?? 0,
         ];
     }
 
@@ -184,7 +147,7 @@ class Detail extends Component
         $this->specList = array_values($this->specList);
     }
 
-    public function setMode(string $mode): void
+    public function setMode(string $mode, BarangService $barangService): void
     {
         if ($mode === 'edit') {
             $this->isEditing = true;
@@ -193,16 +156,12 @@ class Detail extends Component
             $this->resetValidation();
             $this->gambar = [];
             $this->hapusGambarIds = [];
-            $this->loadProduk();
+            $this->loadProduk($barangService);
         }
     }
 
-    public function save(): void
+    public function save(BarangService $barangService): void
     {
-        $this->validate([
-            'gambar.*' => 'image|max:2048',
-        ]);
-
         $formattedSpecs = [];
         foreach ($this->specList as $spec) {
             if (! empty($spec['label'])) {
@@ -210,58 +169,45 @@ class Detail extends Component
             }
         }
 
-        $response = Http::withToken(session('api_token'))
-            ->put(config('api.base_url')."/barang/{$this->idBarang}", [
+        try {
+            foreach ($this->hapusGambarIds as $idHapus) {
+                $barangService->deleteGambarSingle($idHapus);
+            }
+
+            $barangService->updateItem($this->idBarang, [
                 'nama_barang' => $this->nama,
                 'kode_barang' => $this->kodeBarang,
-                'id_kategori' => $this->idKategori,
-                'harga' => $this->harga,
-                'stok' => $this->stok,
+                'id_kategori' => (int) $this->idKategori,
+                'harga' => (int) $this->harga,
+                'stok' => (int) $this->stok,
                 'penyimpanan' => $this->penyimpanan,
                 'specification' => $formattedSpecs,
-                'status' => $this->status,
+                'status' => $this->status ?: 'aktif',
+                'gambar' => $this->gambar,
             ]);
-
-        if ($response->successful()) {
-
-            foreach ($this->hapusGambarIds as $idHapus) {
-                Http::withToken(session('api_token'))
-                    ->delete(config('api.base_url')."/gambar/{$idHapus}");
-            }
-
-            if (! empty($this->gambar)) {
-                $imageRequest = Http::withToken(session('api_token'));
-                foreach ($this->gambar as $file) {
-                    $imageRequest->attach(
-                        'gambar[]',
-                        file_get_contents($file->getRealPath()),
-                        $file->getClientOriginalName()
-                    );
-                }
-                $imageRequest->post(config('api.base_url').'/gambar', [
-                    'id_barang' => $this->idBarang,
-                ]);
-            }
 
             $this->isEditing = false;
             $this->gambar = [];
             $this->hapusGambarIds = [];
 
-            $this->redirect(config('app.url')."/produk/detail/{$this->kodeBarang}");
             session()->flash('success', 'Produk berhasil diperbarui.');
-        } else {
-            session()->flash('error', 'Gagal memperbarui produk. Pastikan semua data benar.');
+            $this->redirect("/produk/detail/{$this->kodeBarang}", navigate: true);
+
+        } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal memperbarui produk: '.$e->getMessage());
         }
     }
 
-    public function hapus(string $id): void
+    public function hapus(string $id, BarangService $barangService): void
     {
-        $response = Http::withToken(session('api_token'))
-            ->delete(config('api.base_url')."/barang/{$id}");
-
-        if ($response->successful()) {
+        try {
+            $barangService->deleteItem($id);
             session()->flash('success', 'Produk dihapus.');
-            $this->redirect(route('produk'), navigate: true);
+            $this->redirect('/produk', navigate: true);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal menghapus produk: '.$e->getMessage());
         }
     }
 
@@ -275,8 +221,9 @@ class Detail extends Component
 
     public function render(): View|Factory|\Illuminate\View\View
     {
-        $apiResponse = $this->fetchRating();
-        $rating = $this->buildPaginator($apiResponse);
+        $rating = Rating::with('user')
+            ->where('id_barang', $this->idBarang)
+            ->paginate(5);
 
         return view('livewire.pages.data.detail', ['rating' => $rating]);
     }

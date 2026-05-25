@@ -71,8 +71,8 @@
                                 <thead class="bg-gray-50 border-b border-gray-100">
                                 <tr>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">No. Transaksi</th>
-                                    <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Tanggal</th>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Pelanggan</th>
+                                    <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Tanggal</th>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Metode</th>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Total Pembayaran</th>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Status</th>
@@ -86,18 +86,15 @@
                                             <span class="text-sm font-bold text-gray-900">
                                                 #{{ $var['kode_transaksi'] }}
                                             </span>
-                                            @if($var['keterangan'])
-                                                <p class="text-[10px] text-gray-400 truncate max-w-[120px]" title="{{ $var['keterangan'] }}">{{ $var['keterangan'] }}</p>
-                                            @endif
-                                        </td>
-                                        <td class="px-5 py-3.5">
-                                            <span class="text-xs text-gray-500 font-medium">
-                                                {{ isset($var['created_at']) ? date('d M Y, H:i', strtotime($var['created_at'])) : '-' }}
-                                            </span>
                                         </td>
                                         <td class="px-5 py-3.5">
                                             <span class="text-xs text-gray-700 font-bold">
                                                 {{ $var['user']['name'] ?? 'User ID: ' . $var['user_id'] }}
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-3.5">
+                                            <span class="text-xs text-gray-500 font-medium">
+                                                {{ isset($var['created_at']) ? date('d M Y, H:i', strtotime($var['created_at'])) : '-' }}
                                             </span>
                                         </td>
                                         <td class="px-5 py-3.5">

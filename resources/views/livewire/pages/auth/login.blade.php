@@ -73,9 +73,6 @@
                                 </svg>
                             </button>
                         </div>
-                        @error('form.password')
-                        <p class="text-sm text-red-600 font-medium">{{ $message }}</p>
-                        @enderror
                     </div>
                     <button type="submit" class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.98] flex items-center justify-center gap-2 bg-[#07E200]"> Masuk ke Dashboard <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />

@@ -2,11 +2,10 @@
 
 namespace App\Livewire\Pages;
 
+use App\Services\BarangService;
+use App\Services\KategoriService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -19,6 +18,7 @@ class Produk extends Component
     public string $search = '';
 
     public string $kategori = '';
+
     public string $searchBy = 'nama_barang';
 
     public function mount(): void
@@ -42,83 +42,36 @@ class Produk extends Component
         session(['produk_view_mode' => $mode]);
     }
 
-    public function hapus(string $id): void
+    public function hapus(string $id, BarangService $barangService): void
     {
-        $response = Http::withToken(session('api_token'))
-            ->delete(config('api.base_url')."/barang/{$id}");
-
-        if ($response->successful()) {
+        try {
+            $barangService->deleteItem($id);
             session()->flash('success', 'Produk berhasil dihapus.');
-        } else {
+        } catch (\Exception $e) {
             session()->flash('error', 'Gagal menghapus produk. Silakan coba lagi.');
         }
     }
 
-    private function fetchProduk(): array
+    public function render(BarangService $barangService, KategoriService $kategoriService): View|Factory|\Illuminate\View\View
     {
-        $perPage = $this->viewMode === 'card' ? 12 : 15;
+        $limitPerPage = $this->viewMode === 'card' ? 12 : 15;
 
-        $params = [
-            'page' => $this->getPage(),
-        ];
+        $filters = [];
 
-        if (!empty($this->search)) {
-            $params[$this->searchBy] = $this->search;
+        if (! empty($this->search)) {
+            $filters[$this->searchBy] = $this->search;
         }
 
-        if (!empty($this->kategori)) {
-            $params['id_kategori'] = $this->kategori;
+        if (! empty($this->kategori)) {
+            $filters['id_kategori'] = $this->kategori;
         }
 
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/barang', $params);
-
-        if ($response->failed()) {
-            return [];
-        }
-
-        return $response->json()['data'] ?? [];
-    }
-
-    private function fetchKategori(): array
-    {
-
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/kategori');
-
-        if ($response->failed()) {
-            return ['data' => []];
-        }
-
-        return $response->json()['data']['data'];
-    }
-
-    private function buildPaginator(array $apiResponse): LengthAwarePaginator
-    {
-        $perPage = $this->viewMode === 'card' ? 12 : 15;
-
-        $items = Collection::make($apiResponse['data'] ?? []);
-
-        return new LengthAwarePaginator(
-            items: $items,
-            total: $apiResponse['total'] ?? $items->count(),
-            perPage: $apiResponse['per_page'] ?? $perPage,
-            currentPage: $apiResponse['current_page'] ?? $this->getPage(),
-            options: [
-                'path' => url()->current(),
-            ]
-        );
-    }
-
-    public function render(): View|Factory|\Illuminate\View\View
-    {
-        $apiResponse = $this->fetchProduk();
-        $produk = $this->buildPaginator($apiResponse);
-        $kategoriList = $this->fetchKategori();
+        $produkResponse = $barangService->getDaftarBarang($filters, $limitPerPage);
+        $kategoriResponse = $kategoriService->getKategori([], 100);
 
         return view('livewire.pages.produk', [
-            'produk' => $produk,
-            'kategoriList' => $kategoriList,
+            'produk' => $produkResponse['data'],
+            'kategoriList' => $kategoriResponse['data']->items(),
         ]);
     }
 }

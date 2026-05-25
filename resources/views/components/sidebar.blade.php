@@ -63,8 +63,8 @@
                 <span class="text-sm font-medium">Kategori</span>
             </a>
 
-            <a href="{{ route('pesanan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors">
-                <span class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
+            <a href="{{ route('pesanan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('pesanan*') ? 'bg-[#07E200]/10 text-[#07E200]' : 'text-gray-600 hover:bg-gray-50' }}">
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center {{ request()->routeIs('pesanan*') ? 'bg-[#07E200] text-white' : 'bg-gray-100 text-gray-400' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
@@ -73,7 +73,7 @@
                 <span class="ml-auto text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full bg-[#07E200]">8</span>
             </a>
 
-            <div class="pt-4 pb-1">
+            {{--<div class="pt-4 pb-1">
                 <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-400 px-3 mb-2">Account</p>
             </div>
 
@@ -84,7 +84,7 @@
                     </svg>
                 </span>
                 <span class="text-sm font-medium">Profile</span>
-            </a>
+            </a>--}}
         </nav>
 
         <div class="px-4 py-4 border-t border-gray-100">
