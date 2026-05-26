@@ -42,7 +42,9 @@ class BarangService
 
     public function getDaftarBarang(array $filters = [], $limitPerPage = 10): array
     {
-        $filters['aktif_only'] = filter_var($filters['aktif_only'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if (isset($filters['aktif_only'])) {
+            $filters['aktif_only'] = filter_var($filters['aktif_only'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
         $validator = Validator::make($filters, [
             'nama_barang' => 'nullable|string|max:200',
             'qr_code' => 'nullable',
@@ -108,7 +110,7 @@ class BarangService
         } elseif (isset($filters['id_kategori'])) {
             $query->where('id_kategori', $filters['id_kategori']);
             $message = 'Data barang berhasil diambil dengan id kategori';
-        } elseif ($filters['aktif_only']) {
+        } elseif (isset($filters['aktif_only']) && $filters['aktif_only']) {
             $query->whereStatus('aktif');
             $message = 'Data barang berhasil diambil dengan status aktif';
         } else {
