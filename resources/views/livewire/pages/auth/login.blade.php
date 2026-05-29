@@ -8,7 +8,7 @@
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center">
                     <img src="https://www.smkn5malang.sch.id/storage/img/logo.png" class="bg-cover bg-no-repeat" alt="">
                 </div>
-                <span class="text-white font-extrabold text-xl tracking-tight">Toko Vohisma</span>
+                <span class="text-white font-extrabold text-xl tracking-tight">OKarya</span>
             </div>
             <div class="relative z-10 space-y-6">
                 <div class="inline-flex items-center gap-2 bg-white/10 border border-white/10 rounded-full px-4 py-1.5">
@@ -31,11 +31,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                     </div>
-                    <span class="font-extrabold text-gray-900 text-lg">Toko Vohisma</span>
+                    <span class="font-extrabold text-gray-900 text-lg">OKarya</span>
                 </div>
                 <div class="mb-8">
                     <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Selamat datang kembali</h2>
-                    <p class="text-gray-400 text-sm mt-1.5">Masuk ke akun Toko Vohisma kamu untuk melanjutkan</p>
+                    <p class="text-gray-400 text-sm mt-1.5">Masuk ke akun OKarya kamu untuk melanjutkan</p>
                 </div>
                 <form wire:submit="login" class="space-y-5">
                     <div class="space-y-1.5">
@@ -74,9 +74,15 @@
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.98] flex items-center justify-center gap-2 bg-[#07E200]"> Masuk ke Dashboard <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
+                    <button type="submit" class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.98] bg-[#07E200]">
+                        <div wire:loading.remove class="flex items-center justify-center gap-2">
+                            <span>Masuk ke Dashboard </span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </div>
+                        <span wire:loading class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                     </button>
                 </form>
             </div>

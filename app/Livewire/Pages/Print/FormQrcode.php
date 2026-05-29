@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages\Print;
 
+use App\Services\BarangService;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
@@ -11,7 +12,7 @@ class FormQrcode extends Component
     public $limitMode = 'auto';
     public $customLimit = 1;
 
-    public function render()
+    public function render(BarangService $service)
     {
         $params = [
             'only_qr' => 'true',
@@ -27,10 +28,11 @@ class FormQrcode extends Component
             $params['limit'] = 'auto';
         }
 
-        $response = Http::withToken(session('api_token'))
-            ->get(config('api.base_url').'/barang', $params);
-
-        $data = $response->json();
+        try {
+            $data = $service->getDaftarBarang($params);
+        } catch (\Exception $e) {
+            return view('livewire.pages.print.qrcode', ['qrcode' => null]);
+        }
         $items = $data['data'] ?? [];
 
         return view('livewire.pages.print.qrcode', ['qrcode' => $items]);

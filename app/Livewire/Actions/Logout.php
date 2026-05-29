@@ -13,11 +13,11 @@ class Logout
      */
     public function __invoke(): void
     {
+        $token = session('api_token');
+        \auth()->user()->tokens()->where('token', $token)->delete();
         Auth::guard('web')->logout();
         Session::invalidate();
         Session::regenerateToken();
-        $token = session('api_token');
-        Http::withToken($token)->post(config('api.base_url').'/user/revoke-token');
         session()->forget('api_token');
     }
 }

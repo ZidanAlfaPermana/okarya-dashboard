@@ -37,7 +37,7 @@
                     <div>
                         <h1 class="text-xl font-extrabold text-gray-900">Riwayat Pembayaran</h1>
                         <p class="text-xs text-gray-400 mt-0.5">
-                            {{--{{ $pembayaran->total() }}--}} transaksi tercatat di sistem
+                            {{ $pembayaran->total() }} transaksi tercatat di sistem
                         </p>
                     </div>
                 </div>
@@ -49,15 +49,20 @@
                                 <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
                         </div>
-                        <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari Kode Transaksi..." class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 transition-all" />
+                        <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari Kode Transaksi | 5 angka pada kode tengah Ex:TRX-xxxxx63367-xxxxx" class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 transition-all" />
                     </div>
                     <select wire:model.live="status" class="text-sm border border-gray-200 rounded-xl bg-gray-50 px-3 py-2.5 outline-none focus:border-[#07E200] sm:w-48">
-                        <option value="">Semua Status</option>
                         <option value="pending">Pending</option>
-                        <option value="settlement">Settlement / Sukses</option>
+                        <option value="success">Settlement / Sukses</option>
                         <option value="expire">Expired</option>
                         <option value="cancel">Batal</option>
+                        <option value=""> Semua Status </option>
                     </select>
+                    <button type="button" class="text-sm text-white border border-gray-200 rounded-xl bg-lime-400 flex justify-center items-center py-2.5 outline-none sm:w-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                            <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <div wire:loading.flex class="justify-center py-10">
@@ -120,16 +125,9 @@
                                         </td>
                                         <td class="px-5 py-3.5 text-right space-x-1">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ url('pembayaran/detail/'.$var['id_pembayaran']) }}" class="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors inline-block" title="Lihat Detail">
+                                                <a href="{{ url('pesanan/detail/'.$var['kode_transaksi']) }}" class="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors inline-block" title="Lihat Detail">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                                 </a>
-                                                <button
-                                                    wire:click="hapus('{{ $var['id_pembayaran'] }}')"
-                                                    wire:confirm="Hapus data transaksi ini secara permanen?"
-                                                    class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Hapus"
-                                                >
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2" /></svg>
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -144,7 +142,7 @@
                     </div>
 
                     <div class="mt-6">
-                        {{--{{ $pembayaran->links() }}--}}
+                        {{ $pembayaran->links() }}
                     </div>
                 </div>
             </main>

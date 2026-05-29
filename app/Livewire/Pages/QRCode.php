@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages;
 
+use App\Services\BarangService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
@@ -10,17 +11,22 @@ class QRCode extends Component
 {
     public string $search = '';
 
-    public function render()
+    public function render(BarangService $service)
     {
         $perPage = 15;
 
-        if (isset($search)) {
-            $response = Http::withToken(session('api_token'))->get(config('api.base_url').'/barang', ['qr_only' => true, 'kode_barang' => $this->search]);
-        } else {
-            $response = Http::withToken(session('api_token'))->get(config('api.base_url').'/barang', ['qr_only' => true]);
+        try {
+            if (isset($search)) {
+                $data = $service->getDaftarBarang(['only_qr' => true, 'search' => $search]);
+            } else {
+                $data = $service->getDaftarBarang(['only_qr' => true]);
+            }
+        } catch (\Exception $e) {
+            return view('livewire.pages.qr_code', [
+                'qrcode' => null,
+            ]);
         }
 
-        $data = $response->json();
         $items = collect($data['data'] ?? []);
 
         $qrcode = new LengthAwarePaginator(

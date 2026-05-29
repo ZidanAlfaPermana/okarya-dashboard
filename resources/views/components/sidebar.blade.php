@@ -20,7 +20,7 @@
             <div class="flex items-center gap-3">
                 <img src="https://www.smkn5malang.sch.id/storage/img/logo.png" class="w-9 h-9 rounded-xl" alt="">
                 <div>
-                    <p class="text-base font-extrabold text-gray-900 leading-tight">Toko Vohisma</p>
+                    <p class="text-base font-extrabold text-gray-900 leading-tight">OKarya</p>
                     <p class="text-[10px] text-gray-400 leading-tight">Toko karya siswa smkn 5 malang</p>
                 </div>
             </div>
@@ -70,7 +70,9 @@
                     </svg>
                 </span>
                 <span class="text-sm font-medium">Pesanan</span>
-                <span class="ml-auto text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full bg-[#07E200]">8</span>
+                @if(!empty(\App\Services\PembayaranService::getCountOfPendingPembayaran()))
+                    <span class="ml-auto text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full bg-[#07E200]">{{ \App\Services\PembayaranService::getCountOfPendingPembayaran() }}</span>
+                @endif
             </a>
 
             {{--<div class="pt-4 pb-1">

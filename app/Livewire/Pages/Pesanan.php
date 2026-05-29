@@ -2,8 +2,7 @@
 
 namespace App\Livewire\Pages;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Services\PembayaranService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -11,33 +10,23 @@ class Pesanan extends Component
 {
     use WithPagination;
 
-    public $pembayaran = [];
+    public $search = '';
+    public $status = 'pending';
 
-    private function fetchPesanan()
+    public function render(PembayaranService $service)
     {
-        return [];
-    }
+        $filters = [];
 
-    private function buildPaginator(array $apiResponse): LengthAwarePaginator
-    {
-        $perPage = 15;
+        if (! empty($this->search)) {
+            $filters['search'] = $this->search;
+        }
 
-        $items = Collection::make($apiResponse['data'] ?? []);
+        if (! empty($this->status)) {
+            $filters['status'] = $this->status;
+        }
 
-        return new LengthAwarePaginator(
-            items: $items,
-            total: $apiResponse['total'] ?? $items->count(),
-            perPage: $apiResponse['per_page'] ?? $perPage,
-            currentPage: $apiResponse['current_page'] ?? $this->getPage(),
-            options: [
-                'path' => url()->current(),
-            ]
-        );
-    }
+        $data = $service->getPembayaran($filters);
 
-    public function render()
-    {
-        $data = $this->buildPaginator($this->fetchPesanan());
-        return view('livewire.pages.pesanan', ['pembayaran' => $data]);
+        return view('livewire.pages.pesanan', ['pembayaran' => $data['data']]);
     }
 }
