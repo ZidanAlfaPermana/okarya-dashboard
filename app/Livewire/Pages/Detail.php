@@ -71,6 +71,17 @@ class Detail extends Component
         session(['image_view_mode' => $mode]);
     }
 
+    public function konfirmasiBatal($id_barang, $nama_barang)
+    {
+        $this->dispatch('open-confirm',
+            title: 'Hapus Barang?',
+            message: 'Apakah Anda yakin ingin menghapus barang '.$nama_barang.'? Data barang ini tidak bisa dikembalikan lagi.',
+            type: 'danger',
+            method: 'hapus',
+            params: $id_barang
+        );
+    }
+
     private function loadKategori(KategoriService $kategoriService): void
     {
         $response = $kategoriService->getKategori([], 100);

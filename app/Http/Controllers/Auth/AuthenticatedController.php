@@ -17,7 +17,7 @@ class AuthenticatedController extends Controller
 
             return response()->json($data);
         } catch (ValidationException $e) {
-            return $this->errorResponse(null, $e->validator->errors(), 'Validation Error');
+            return $this->errorResponse(null, $e->errors(), 'Validation Error');
         } catch (\Exception) {
             return $this->errorResponse(null, 'error', 'Internal Server Error');
         }
@@ -30,7 +30,7 @@ class AuthenticatedController extends Controller
 
             return response()->json($data);
         } catch (ValidationException $e) {
-            return $this->errorResponse(null, $e->validator->errors(), 'Validation Error');
+            return $this->errorResponse(null, $e->errors(), 'Validation Error');
         } catch (\Exception) {
             return $this->errorResponse(null, 'error', 'Internal Server Error');
         }

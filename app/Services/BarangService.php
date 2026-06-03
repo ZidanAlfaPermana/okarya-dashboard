@@ -20,7 +20,7 @@ class BarangService
             'harga' => 'required|integer|min:1',
             'kode_barang' => 'required|string|unique:barang,kode_barang'.($isUpdate ? ','.$id.',id_barang' : ''),
             'stok' => 'required|integer|min:1',
-            'specification' => 'required|array',
+            'specification' => 'nullable|array',
             'penyimpanan' => 'required|string|min:3|max:200',
             'status' => 'required|string|in:aktif,nonaktif,draft',
 
@@ -59,8 +59,8 @@ class BarangService
             throw new ValidationException($validator);
         }
 
-        if (isset($filters['qr_code'])) {
-            $barang = Barang::where('kode_barang', $filters['qr_code'])->first();
+        if (isset($validator->validated()['qr_code'])) {
+            $barang = Barang::where('kode_barang', $validator->validated()['qr_code'])->first();
             if (! $barang) {
                 throw new \Exception('Barang tidak ditemukan', 404);
             }
@@ -71,13 +71,13 @@ class BarangService
             ];
         }
 
-        if (isset($filters['only_qr'])) {
-            if (isset($filters['kode_barang'])) {
-                $limit = ($filters['limit'] ?? null) == 'auto'
-                    ? Barang::whereLike('kode_barang', $filters['kode_barang'])->value('stok')
-                    : ($filters['limit'] ?? null);
+        if (isset($validator->validated()['only_qr'])) {
+            if (isset($validator->validated()['kode_barang'])) {
+                $limit = ($validator->validated()['limit'] ?? null) == 'auto'
+                    ? Barang::whereLike('kode_barang', $validator->validated()['kode_barang'])->value('stok')
+                    : ($validator->validated()['limit'] ?? null);
 
-                $qr = Barang::whereLike('kode_barang', $filters['kode_barang'])->get(['qr_code', 'kode_barang']);
+                $qr = Barang::whereLike('kode_barang', $validator->validated()['kode_barang'])->get(['qr_code', 'kode_barang']);
 
                 if (isset($limit)) {
                     $data = collect()->times($limit, function () use ($qr) {
@@ -89,7 +89,7 @@ class BarangService
 
                 return [
                     'data' => $data,
-                    'message' => 'Qr Berhasil didapatkan dengan kode barang '.$filters['kode_barang'],
+                    'message' => 'Qr Berhasil didapatkan dengan kode barang '.$validator->validated()['kode_barang'],
                 ];
             }
 
@@ -101,16 +101,19 @@ class BarangService
 
         $query = Barang::with(['kategori', 'ratings', 'gambar']);
 
-        if (isset($filters['nama_barang'])) {
-            $query->whereLike('nama_barang', '%'.$filters['nama_barang'].'%');
+        if (isset($validator->validated()['aktif_only']) && $validator->validated()['aktif_only'] && isset($validator->validated()['nama_barang'])) {
+            $query->whereLike('nama_barang', '%'.$validator->validated()['nama_barang'].'%')->whereStatus('aktif');
+            $message = 'Data barang berhasil diambil dengan nama dan status aktif';
+        } elseif (isset($validator->validated()['nama_barang'])) {
+            $query->whereLike('nama_barang', '%'.$validator->validated()['nama_barang'].'%');
             $message = 'Data barang berhasil diambil dengan nama';
-        } elseif (isset($filters['kode_barang'])) {
-            $query->whereLike('kode_barang', '%'.$filters['kode_barang'].'%');
+        } elseif (isset($validator->validated()['kode_barang'])) {
+            $query->whereLike('kode_barang', '%'.$validator->validated()['kode_barang'].'%');
             $message = 'Data barang berhasil diambil dengan kode barang';
-        } elseif (isset($filters['id_kategori'])) {
-            $query->where('id_kategori', $filters['id_kategori']);
+        } elseif (isset($validator->validated()['id_kategori'])) {
+            $query->where('id_kategori', $validator->validated()['id_kategori']);
             $message = 'Data barang berhasil diambil dengan id kategori';
-        } elseif (isset($filters['aktif_only']) && $filters['aktif_only']) {
+        } elseif (isset($validator->validated()['aktif_only']) && $validator->validated()['aktif_only']) {
             $query->whereStatus('aktif');
             $message = 'Data barang berhasil diambil dengan status aktif';
         } else {
@@ -172,21 +175,22 @@ class BarangService
             throw new \Exception('Barang tidak ditemukan', 404);
         }
 
+        $cleanData = $validator->validated();
         $oldKode = strtoupper($barang->kode_barang);
-        $newKode = strtoupper($data['kode_barang'] ?? $oldKode);
+        $newKode = strtoupper($cleanData['kode_barang'] ?? $oldKode);
 
         if ($oldKode !== $newKode) {
             if (Storage::disk('public')->exists('qr_codes/'.$oldKode.'.svg')) {
                 Storage::disk('public')->delete('qr_codes/'.$oldKode.'.svg');
             }
             $f_name = $this->createQRCode($newKode);
-            $data['qr_code'] = $f_name;
+            $cleanData['qr_code'] = $f_name;
         }
 
-        $barang->update($data);
+        $barang->update($cleanData);
 
-        if (isset($data['gambar']) && is_array($data['gambar'])) {
-            $this->uploadGambar($barang->id_barang, $data['gambar']);
+        if (isset($cleanData['gambar']) && is_array($cleanData['gambar'])) {
+            $this->uploadGambar($barang->id_barang, $cleanData['gambar']);
         }
 
         return [

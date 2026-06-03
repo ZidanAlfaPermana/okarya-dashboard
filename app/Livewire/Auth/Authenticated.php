@@ -4,12 +4,9 @@ namespace App\Livewire\Auth;
 
 use App\Livewire\Forms\LoginForm;
 use App\Services\AuthService;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
-use Mockery\Exception;
 
 class Authenticated extends Component
 {
@@ -22,24 +19,19 @@ class Authenticated extends Component
     {
         $this->validate();
         try {
-            $data = $service->getToken([
+            $service->login([
                 'email' => $this->form->email,
                 'password' => $this->form->password,
             ]);
         } catch (ValidationException $e) {
-            $this->setErrorBag($e->validator->errors());
-        } catch (Exception) {
+            $this->setErrorBag($e->validator->getMessageBag());
+
             return;
         }
 
         $this->form->authenticate();
 
         Session::regenerate();
-
-        if ($data) {
-            $token = $data['token'];
-            session(['api_token' => $token]);
-        }
 
         $this->redirectIntended(default: route('welcome', absolute: false), navigate: true);
     }

@@ -42,6 +42,18 @@ class Produk extends Component
         session(['produk_view_mode' => $mode]);
     }
 
+    public function konfirmasiBatal($id_produk, $nama_barang)
+    {
+        $this->dispatch('open-confirm',
+            title: 'Hapus Produk?',
+            message: 'Apakah Anda yakin ingin menghapus produk '.$nama_barang.'? Data produk ini tidak bisa dikembalikan lagi.',
+            type: 'danger',
+            method: 'hapus',
+            params: $id_produk,
+            componentId: $this->getId()
+        );
+    }
+
     public function hapus(string $id, BarangService $barangService): void
     {
         try {

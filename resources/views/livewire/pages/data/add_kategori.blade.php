@@ -60,74 +60,20 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                    <div class="space-y-4">
-                        <div class="bg-white border border-gray-100 rounded-2xl p-5 space-y-3">
-                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Status Kategori</p>
-
-                            <div class="space-y-2">
-                                <label wire:click="$set('status', 'aktif')"
-                                       class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all
-                                  {{ $status === 'aktif' ? 'border-[#07E200] bg-brand-light' : 'border-gray-200 hover:border-gray-300' }}">
-                                    <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                                    {{ $status === 'aktif' ? 'border-[#07E200]' : 'border-gray-300' }}">
-                                        @if ($status === 'aktif')
-                                            <div class="w-2 h-2 rounded-full" style="background:#07E200"></div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-800">Aktif</p>
-                                        <p class="text-[11px] text-gray-400">Kategori langsung tampil</p>
-                                    </div>
-                                </label>
-
-                                <label wire:click="$set('status', 'draft')"
-                                       class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all
-                                  {{ $status === 'draft' ? 'border-[#07E200] bg-brand-light' : 'border-gray-200 hover:border-gray-300' }}">
-                                    <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                                    {{ $status === 'draft' ? 'border-[#07E200]' : 'border-gray-300' }}">
-                                        @if ($status === 'draft')
-                                            <div class="w-2 h-2 rounded-full" style="background:#07E200"></div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-800">Draft</p>
-                                        <p class="text-[11px] text-gray-400">Simpan, belum tampil</p>
-                                    </div>
-                                </label>
-
-                                <label wire:click="$set('status', 'nonaktif')"
-                                       class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all
-                                  {{ $status === 'nonaktif' ? 'border-[#07E200] bg-brand-light' : 'border-gray-200 hover:border-gray-300' }}">
-                                    <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                                    {{ $status === 'nonaktif' ? 'border-[#07E200]' : 'border-gray-300' }}">
-                                        @if ($status === 'nonaktif')
-                                            <div class="w-2 h-2 rounded-full" style="background:#07E200"></div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-gray-800">Nonaktif</p>
-                                        <p class="text-[11px] text-gray-400">Kategori disembunyikan</p>
-                                    </div>
-                                </label>
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white border border-gray-100 rounded-2xl p-6">
+                        <p class="text-sm font-bold text-gray-900 mb-5">Informasi Ketegori</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2 space-y-1.5">
+                                <label class="text-xs font-semibold text-gray-600">Nama Kategori <span class="text-red-400">*</span></label>
+                                <input type="text" wire:model="nama_kategori" placeholder="Masukan nama kategori" class="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all" />
+                                @error('nama_kategori') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                             </div>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-2 space-y-4">
-                        <div class="bg-white border border-gray-100 rounded-2xl p-6">
-                            <p class="text-sm font-bold text-gray-900 mb-5">Informasi Ketegori</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="sm:col-span-2 space-y-1.5">
-                                    <label class="text-xs font-semibold text-gray-600">Nama Kategori <span class="text-red-400">*</span></label>
-                                    <input type="text" wire:model="nama_kategori" placeholder="Masukan nama kategori" class="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all" />
-                                    @error('nama_kategori') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
-                                </div>
 
-                                <div class="sm:col-span-2 space-y-1.5">
-                                    <label class="text-xs font-semibold text-gray-600">Deskripsi Kategori <span class="text-red-400">*</span></label>
-                                    <textarea wire:model="deskripsi" class="w-full  px-3.5 py-2.5 resize-none text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all">Deskripsi Kategori</textarea>
-                                    @error('deskripsi') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
-                                </div>
+                            <div class="sm:col-span-2 space-y-1.5">
+                                <label class="text-xs font-semibold text-gray-600">Deskripsi Kategori <span class="text-red-400">*</span></label>
+                                <textarea wire:model="deskripsi" class="w-full  px-3.5 py-2.5 resize-none text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all">Deskripsi Kategori</textarea>
+                                @error('deskripsi') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
                     </div>

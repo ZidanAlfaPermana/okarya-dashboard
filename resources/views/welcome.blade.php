@@ -13,7 +13,6 @@
                     <h1 class="text-base sm:text-lg font-bold text-gray-900">Dashboard</h1>
                     <p class="text-xs text-gray-400 hidden sm:block">Selamat datang kembali, {{ auth()->user()->name }}</p>
                 </div>
-                <a class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:#07E200"> {{ substr(auth()->user()->name, 0, 1) }} </a>
             </header>
             <main class="flex-1 p-4 sm:p-6 space-y-6">
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -74,7 +73,7 @@
                             <a href="{{ route('produk') }}" class="text-xs font-semibold" style="color:#07E200">Lihat semua</a>
                         </div>
                         <div class="space-y-3">
-                            @foreach($data['produk_terlaris'] as $datas)
+                            @forelse($data['produk_terlaris'] as $datas)
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-yellow-50 flex-shrink-0">
                                         <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -92,7 +91,16 @@
                                     </div>
                                     <p class="text-sm font-bold text-gray-900 flex-shrink-0">{{ $datas['total'] }}</p>
                                 </div>
-                            @endforeach
+                            @empty
+                                <div class="flex flex-col col-span-full pt-10 justify-center items-center text-center gap-2 w-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-cart-check size-8 text-gray-500" viewBox="0 0 16 16">
+                                        <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
+                                        <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                                    </svg>
+                                    <h3 class="col-span-full text-gray-500 text-2xl">Pesanan Kosong</h3>
+                                    <p class="col-span-full text-gray-400">Tidak ada pesanan yang ditemukan.</p>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -108,7 +116,6 @@
                                 <tr class="border-b border-gray-100">
                                     <th class="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide pb-2.5">ID</th>
                                     <th class="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide pb-2.5">Pelanggan</th>
-                                    <th class="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide pb-2.5 hidden sm:table-cell">Produk</th>
                                     <th class="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide pb-2.5">Total</th>
                                     <th class="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide pb-2.5">Status</th>
                                 </tr>
@@ -116,14 +123,13 @@
                                 <tbody class="divide-y divide-gray-50">
                                 @foreach($data['pesanan_terbaru'] as $datas)
                                     <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="py-3 text-xs font-mono text-gray-400">{{ $datas['kode_transaksi'] }}</td>
+                                        <td class="py-3 text-xs font-mono text-gray-400"><a href="{{ url('pesanan/detail/'.$datas['kode_transaksi']) }}" class="hover:underline">{{ $datas['kode_transaksi'] }}</a></td>
                                         <td class="py-3">
                                             <div class="flex items-center gap-2">
                                                 <div class="w-7 h-7 rounded-full text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0" style="background:#07E200">{{ substr($datas['pelanggan'], 0, 1) }}</div>
                                                 <span class="text-sm font-medium text-gray-800">{{ $datas['pelanggan'] }}</span>
                                             </div>
                                         </td>
-                                        <td class="py-3 text-xs text-gray-500 hidden sm:table-cell">{{ $datas['produk'] }}</td>
                                         <td class="py-3 text-sm font-semibold text-gray-900">Rp {{ number_format($datas['total'], 0, 1) }}</td>
                                         <td class="py-3">
                                             <span class="text-[11px] font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">{{ $datas['status'] }}</span>
@@ -132,6 +138,15 @@
                                 @endforeach
                                 </tbody>
                             </table>
+                            @empty($data['pesanan_terbaru'])
+                                <div class="flex flex-col col-span-full pt-10 justify-center items-center text-center gap-2 w-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10 text-gray-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                    </svg>
+                                    <h3 class="col-span-full text-gray-500 text-2xl">Pesanan Kosong</h3>
+                                    <p class="col-span-full text-gray-400">Tidak ada pesanan yang ditemukan.</p>
+                                </div>
+                            @endempty
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl border border-gray-100 p-5">
@@ -140,8 +155,8 @@
                             <span class="text-xs font-bold text-white px-2 py-0.5 rounded-full bg-red-400">{{ count($data['stok_menipis']) }} item</span>
                         </div>
                         <div class="space-y-3">
-                            @foreach($data['stok_menipis'] as $datas)
-                                <div @class(['flex', 'items-cente', 'gap-3', 'p-3', 'bg-red-50' => $datas['stok'] <= 5, 'bg-orange-50' => $datas['stok'] > 5, 'rounded-xl', 'border', 'border-red-100' => $datas['stok'] <= 5, 'border-orange-100' => $datas['stok'] > 5])>
+                            @forelse($data['stok_menipis'] as $datas)
+                                <div @class(['flex', 'items-center', 'gap-3', 'p-3', 'bg-red-50' => $datas['stok'] <= 5, 'bg-orange-50' => $datas['stok'] > 5, 'rounded-xl', 'border', 'border-red-100' => $datas['stok'] <= 5, 'border-orange-100' => $datas['stok'] > 5])>
                                     <div class="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
                                         <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" />
@@ -153,9 +168,18 @@
                                         <p class="text-sm font-semibold text-gray-800 truncate">{{ $datas['nama_barang'] }}</p>
                                         <p class="text-xs text-red-500 font-medium">Sisa {{ $datas['stok'] }} pcs</p>
                                     </div>
-                                    <button class="text-xs font-semibold text-white px-2.5 py-1 rounded-lg flex-shrink-0" style="background:#07E200">Restok</button>
+                                    <a href="{{ url('produk/detail/'.$datas['kode_barang']) }}" class="text-xs font-semibold text-white px-2 w-fit h-8 flex items-center rounded-lg flex-shrink-0" style="background:#07E200">Restok</a>
                                 </div>
-                            @endforeach
+                            @empty
+                                <div class="flex flex-col col-span-full pt-10 justify-center items-center text-center gap-2 w-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-bookmark-check size-8 text-gray-500" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                                    </svg>
+                                    <h3 class="col-span-full text-gray-500 text-xl">Barang Terpenuhi</h3>
+                                    <p class="col-span-full text-gray-400 text-sm">Mungkin barang kosong atau stok sudah terisi.</p>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

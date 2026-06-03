@@ -11,7 +11,6 @@ class KategoriService
     private array $rules = [
         'nama_kategori' => 'required|string|min:3|max:200',
         'deskripsi' => 'required|string|min:3|max:500',
-        'status' => 'required|in:aktif,nonaktif,draft',
     ];
 
     private array $messages = [
@@ -28,10 +27,6 @@ class KategoriService
 
         if (! empty($filters['nama_kategori'])) {
             $query->where('nama_kategori', 'like', '%'.$filters['nama_kategori'].'%');
-        }
-
-        if (! empty($filters['status']) && in_array($filters['status'], ['aktif', 'nonaktif', 'draft'])) {
-            $query->where('status', $filters['status']);
         }
 
         return [

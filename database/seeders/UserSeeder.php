@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     use WithoutModelEvents;
 
@@ -21,6 +21,14 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'mamageh12@gmail.com',
             'password' => bcrypt('mamageh12'),
+            'level' => 'admin',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'mamageh13@gmail.com',
+            'password' => bcrypt('mamageh13'),
+            'level' => 'user',
         ]);
     }
 }

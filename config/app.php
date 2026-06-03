@@ -15,6 +15,11 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'privileges' => [
+        'admin' => env('ADMIN_PRIVILEGE', 'admin'),
+        'customer' => env('CUSTOMER_PRIVILEGE', 'customer'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

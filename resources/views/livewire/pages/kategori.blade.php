@@ -55,12 +55,6 @@
                         </div>
                         <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari nama kategori" class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 transition-all" />
                     </div>
-                    <select wire:model.live="status" class="text-sm border border-gray-200 rounded-xl bg-gray-50 px-3 py-2.5 outline-none focus:border-[#07E200] sm:w-44">
-                        <option value="">Semua Status</option>
-                        <option value="aktif">Aktif</option>
-                        <option value="draft">Draft</option>
-                        <option value="nonaktif">Nonaktif</option>
-                    </select>
                 </div>
 
                 <div wire:loading.flex class="justify-center py-10">
@@ -75,7 +69,6 @@
                                 <tr>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Nama Kategori</th>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Deskripsi</th>
-                                    <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Status</th>
                                     <th class="px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wide text-center">Aksi</th>
                                 </tr>
                                 </thead>
@@ -92,19 +85,13 @@
                                                 {{ $var['deskripsi'] ?? '-' }}
                                             </span>
                                         </td>
-                                        <td class="px-5 py-3.5">
-                                            <span @class(['text-xs', 'bg-green-500' => $var['status'] == 'aktif', 'bg-red-500' => $var['status'] == 'nonaktif', 'bg-yellow-500' => !in_array($var['status'], ['aktif', 'nonaktif']), 'text-white', 'px-2.5 py-1', 'rounded-full', 'font-medium'])>
-                                                {{ strtoupper($var['status']) ?? '-' }}
-                                            </span>
-                                        </td>
                                         <td class="px-5 py-3.5 text-right space-x-1">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ url('kategori/edit/'.$var['id_kategori']) }}" class="p-1.5 rounded-lg text-gray-400 hover:text-[#07E200] hover:bg-green-50 transition-colors inline-block">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                                 </a>
                                                 <button
-                                                    wire:click="hapus('{{ $var['id_kategori'] }}')"
-                                                    wire:confirm="Hapus kategori ini?"
+                                                    wire:click="konfirmasiBatal('{{ $var['id_kategori'] }}', '{{ $var['nama_kategori'] }}')"
                                                     class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2" /></svg>

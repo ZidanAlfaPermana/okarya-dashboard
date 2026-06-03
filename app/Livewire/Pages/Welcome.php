@@ -29,7 +29,7 @@ class Welcome extends Component
             $startOfWeek = $now->copy()->startOfWeek();
             $endOfWeek = $now->copy()->endOfWeek();
 
-            $totalPendapatan = Pembayaran::where('status', 'success')->sum('total');
+            $totalPendapatan = Pembayaran::where('status', 'settlement')->sum('total');
             $totalPesanan = Pembayaran::count();
             $totalKategori = Kategori::count();
             $totalProduk = Barang::count();
@@ -45,7 +45,7 @@ class Welcome extends Component
                 $dayName = $date->locale('id')->isoFormat('dddd');
                 $dayLabel = $date->locale('id')->isoFormat('ddd');
 
-                $penjualanHariIni = Pembayaran::where('status', 'success')
+                $penjualanHariIni = Pembayaran::where('status', 'settlement')
                     ->whereDate('created_at', $date->toDateString())
                     ->sum('total');
 
@@ -85,7 +85,7 @@ class Welcome extends Component
                     $sisaItem = $trx->item->count() > 1 ? ' + '.($trx->item->count() - 1).' item lain' : '';
 
                     return [
-                        'kode_transaksi' => '#'.$trx->kode_transaksi,
+                        'kode_transaksi' => $trx->kode_transaksi,
                         'pelanggan' => $trx->user->name ?? 'Guest',
                         'produk' => $namaProduk.$sisaItem,
                         'total' => (int) $trx->total,

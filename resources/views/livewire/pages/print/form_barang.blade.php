@@ -21,7 +21,7 @@
     <div class="max-w-[1100px] mx-auto border-black print:border-none">
         <div class="text-center border-b-2 border-black pb-4 mb-6">
             <h1 class="text-2xl font-black uppercase tracking-tighter">Form Pengisian Data Barang</h1>
-            <p class="text-sm font-medium text-gray-600">Toko Vohisma - Inventaris Siswa SMKN 5 Malang</p>
+            <p class="text-sm font-medium text-gray-600">Okarya Vohisma - Toko Jurusan SMKN 5 Malang</p>
             <p class="print:hidden text-[10px] text-gray-400 mt-1 italic font-mono uppercase tracking-widest">Halaman Nomor: {{ $startNumber }} - {{ $startNumber + 19 }}</p>
         </div>
 

@@ -4,6 +4,7 @@ use App\Livewire\Pages\Data\AddKategori;
 use App\Livewire\Pages\Data\AddProduk;
 use App\Livewire\Pages\Data\DetailPesanan;
 use App\Livewire\Pages\Detail;
+use App\Livewire\Pages\Guide;
 use App\Livewire\Pages\Kategori;
 use App\Livewire\Pages\Pesanan;
 use App\Livewire\Pages\Print\FormBarang;
@@ -26,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('print/qrcode', FormQrcode::class)->name('print.qrcode');
     Route::get('pesanan', Pesanan::class)->name('pesanan');
     Route::get('pesanan/detail/{id}', DetailPesanan::class)->name('pesanan.detail');
+    Route::get('guide', Guide::class)->name('guide');
 });
 
 require __DIR__.'/auth.php';

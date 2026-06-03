@@ -11,7 +11,6 @@ return new class extends Migration {
             $table->id('id_kategori');
             $table->string('nama_kategori');
             $table->text('deskripsi');
-            $table->enum('status', ['aktif', 'nonaktif', 'draft'])->default('draft');
         });
         Schema::create('barang', function (Blueprint $table) {
             $table->id('id_barang');

@@ -11,5 +11,6 @@
 </head>
 <body>
 {{ $slot }}
+<x-confirmation_modal />
 </body>
 </html>

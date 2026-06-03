@@ -20,53 +20,47 @@ class PembayaranController extends Controller
         'w_item' => 'nullable|string',
         'status' => 'nullable|in:pending,settlement,cancel,expire',
         'payment_type' => 'nullable|string',
-        'no_item' => 'nullable|string'
+        'no_item' => 'nullable|string',
     ];
 
     private $messages = [
         'required' => ':attribute pembayaran wajib diisi.',
-        'in' => ':attribute tidak valid. Pilihan yang diizinkan: pending, settlement, cancel, expire.'
+        'in' => ':attribute tidak valid. Pilihan yang diizinkan: pending, settlement, cancel, expire.',
     ];
 
     private $messagesIndex = [
         'string' => ':attribute tidak valid.',
-        'in' => ':attribute harus berisi pending, settlement, cancel, expire.'
+        'in' => ':attribute harus berisi pending, settlement, cancel, expire.',
     ];
 
     public function index(Request $request)
     {
         try {
             $request->validate($this->rulesIndex, $this->messagesIndex);
-            if ($request->input('kode_transaksi')) {
-                if ($request->input('search')) {
-                    $data = $this->pembayaran::with(['user'])->whereLike('kode_transaksi', '%'.$request->input('kode_transaksi').'%')->paginate($this->getDefaultDataLimitPerPage());
-                    return $this->successResponse($data, 'data pembayaran berhasil diambil sea');
+            $query = $this->pembayaran::with(['user'])->whereUserId($request->user()->id);
+            if (! $request->boolean('no_item')) {
+                $query->with(['item.barang']);
+            }
+            if ($request->filled('kode_transaksi')) {
+                if ($request->boolean('search')) {
+                    $query->where('kode_transaksi', 'like', '%'.$request->kode_transaksi.'%');
+                } else {
+                    $query->where('kode_transaksi', $request->kode_transaksi);
                 }
-                if ($request->input('w_item')) {
-                    $data = $this->pembayaran::with(['item.barang', 'user'])->whereKodeTransaksi($request->input('kode_transaksi'))->first();
-                    return $this->successResponse($data, 'data pembayaran berhasil diambil');
-                }
-                $data = $this->pembayaran::with(['user'])->whereKodeTransaksi($request->input('kode_transaksi'))->first();
-                return $this->successResponse($data, 'data pembayaran berhasil diambil');
             }
-            if ($request->input('status')) {
-                if ($request->input('w_item')) {
-                    $data = $this->pembayaran::with(['item.barang', 'user'])->whereStatus($request->status)->paginate($this->getDefaultDataLimitPerPage());
-                    return $this->successResponse($data, 'data pembayaran berhasil diambil');
-                }
-                $data = $this->pembayaran::with(['user'])->whereStatus($request->status)->paginate($this->getDefaultDataLimitPerPage());
-                return $this->successResponse($data, 'data pembayaran berhasil diambil');
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
             }
-            if ($request->input('payment_type')) {
-                $data = $this->pembayaran::with(['item.barang', 'user'])->wherePaymentType($request->payment_type);
-                return $this->successResponse($data, 'data pembayaran berhasil diambil');
+            if ($request->filled('payment_type')) {
+                $query->where('payment_type', $request->payment_type);
             }
-            if ($request->input('no_item')) {
-                $data = $this->pembayaran::with(['user'])->paginate($this->getDefaultDataLimitPerPage());
-                return $this->successResponse($data, 'data berhasil didapat');
+            if ($request->filled('kode_transaksi') && ! $request->boolean('search')) {
+                $data = $query->first();
+            } else {
+                $data = $query->paginate($this->getDefaultDataLimitPerPage());
             }
-            $data = $this->pembayaran::with(['item.barang', 'user'])->paginate($this->getDefaultDataLimitPerPage());
-            return $this->successResponse($data, 'data berhasil didapat');
+
+            return $this->successResponse($data, 'Data pembayaran berhasil didapat');
         } catch (ValidationException $e) {
             return $this->errorResponse(null, $e->validator->errors(), 'Error validation');
         } catch (\Exception $e) {
@@ -74,13 +68,21 @@ class PembayaranController extends Controller
         }
     }
 
-    public function show($id_pembayaran)
+    public function show(Request $request, $id_pembayaran)
     {
         try {
+            $transaksi = $this->pembayaran::whereIdPembayaran($id_pembayaran)
+                ->whereUserId($request->user()->id)
+                ->first();
+
+            if (! $transaksi) {
+                return $this->errorResponse(null, 'forbidden', 'Data pembayaran tidak ditemukan atau akses ditolak');
+            }
             $pembayaran = $this->idPembayaran($id_pembayaran);
-            if (!$pembayaran->exists()) {
+            if (! $pembayaran->exists()) {
                 return $this->errorResponse(null, 'unknown', 'data pembayaran tidak ditemukan');
             }
+
             return $this->successResponse($pembayaran->get(), 'data berhasil diambil');
         } catch (\Exception $e) {
             return $this->errorResponse(null, 'error', 'Internal server error');
@@ -92,15 +94,16 @@ class PembayaranController extends Controller
         try {
             $request->validate($this->rules, $this->messages);
             $pembayaran = $this->idPembayaran($id_pembayaran);
-            if (!$pembayaran->exists()) {
+            if (! $pembayaran->exists()) {
                 return $this->errorResponse(null, 'unknown', 'data pembayaran tidak ditemukan');
             }
             if ($pembayaran->status === 'settlement') {
                 return response()->json(['message' => 'Transaksi sudah lunas dan tidak bisa diubah statusnya'], 403);
             }
             $pembayaran->update([
-                'status' => $request->status
+                'status' => $request->status,
             ]);
+
             return $this->successResponse($pembayaran, 'data berhasil diubah');
         } catch (ValidationException $e) {
             return $this->errorResponse(null, $e->validator->errors(), 'Internal server error');
@@ -113,10 +116,11 @@ class PembayaranController extends Controller
     {
         try {
             $pembayaran = $this->idPembayaran($id_pembayaran);
-            if (!$pembayaran->exists()) {
+            if (! $pembayaran->exists()) {
                 return $this->errorResponse(null, 'unknown', 'data pembayaran tidak ditemukan');
             }
             $pembayaran->delete();
+
             return $this->successResponse(null, 'data berhasil di hapus');
         } catch (\Exception $e) {
             return $this->errorResponse(null, 'error', 'internal server error');

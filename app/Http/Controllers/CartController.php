@@ -23,10 +23,10 @@ class CartController extends Controller
         'qty.min' => 'Jumlah minimal adalah 1.',
     ];
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id;
             $carts = $this->cart::with('barang')->whereUserId($userId)->paginate($this->getDefaultDataLimitPerPage());
 
             return $this->successResponse($carts, 'Data cart berhasil diambil');
@@ -39,7 +39,7 @@ class CartController extends Controller
     {
         try {
             $request->validate($this->rules, $this->messages);
-            $userId = auth()->id();
+            $userId = $request->user()->id;
             $cart = $this->cart::whereUserId($userId)
                 ->whereIdBarang($request->id_barang)
                 ->first();
@@ -61,10 +61,10 @@ class CartController extends Controller
         }
     }
 
-    public function destroy($id_cart)
+    public function destroy(Request $request, $id_cart)
     {
         try {
-            $userId = auth()->id();
+            $userId = $request->user()->id;
             $cart = $this->cart::where('user_id', $userId)->where('id_cart', $id_cart)->first();
             if (! $cart) {
                 return response()->json(['message' => 'Item keranjang tidak ditemukan'], 404);

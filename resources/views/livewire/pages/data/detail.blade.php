@@ -67,7 +67,7 @@
                             </button>
                         @endif
 
-                        <button wire:click="hapus({{ $idBarang }})" wire:confirm="Hapus produk ini secara permanen?" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl border border-red-200 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
+                        <button wire:click="konfirmasiBatal('{{ $idBarang }}', '{{ $nama }}')" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl border border-red-200 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <polyline points="3 6 5 6 21 6" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2" />
@@ -487,6 +487,7 @@
                             </div>
                         @endif
                     </div>
+                        <x-confirmation_modal />
                 </div>
             </main>
         </div>

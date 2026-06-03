@@ -19,10 +19,10 @@ class FavoriteController extends Controller
         'exists' => ':attribute tidak ditemukan',
     ];
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $user = auth()->id();
+            $user = $request->user()->id;
             $data = $this->favorite::with(['barang'])->whereUserId($user)->paginate($this->getDefaultDataLimitPerPage());
             return $this->successResponse($data, 'data favorite berhasil ditampilkan');
         } catch (\Exception) {
@@ -34,8 +34,8 @@ class FavoriteController extends Controller
     {
         try {
             $request->validate($this->rules, $this->messages);
-            $user = auth()->id();
-            $favorite = $this->favorite::whereUserId($user)->whereBarangId($request->id_barang)->first();
+            $user = $request->user()->id;
+            $favorite = $this->favorite::whereUserId($user)->whereIdBarang($request->id_barang)->first();
             if ($favorite) {
                 return $this->errorResponse(null, 'duplicate entry', 'Item sudah ditambahkan ke favorite', 422);
             }
@@ -51,10 +51,10 @@ class FavoriteController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         try {
-            $user = auth()->id();
+            $user = $request->user()->id;
             $favorite = $this->favorite::whereUserId($user)->whereFavoriteId($id)->first();
             if ($favorite) {
                 $favorite->delete();

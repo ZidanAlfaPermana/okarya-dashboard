@@ -193,12 +193,14 @@
                                     </div>
                                 </div>
                                 <div class="space-y-1.5">
-                                    <label class="text-xs font-semibold text-gray-500">Stok Awal</label>
+                                    <label class="text-xs font-semibold text-gray-500">Stok Awal <span class="text-red-400">*</span></label>
                                     <input type="number" wire:model="stok" min="0" placeholder="0" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all" />
+                                    @error('stok') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
                                 <div class="space-y-1.5">
-                                    <label class="text-xs font-semibold text-gray-500">Lokasi Penyimpanan</label>
+                                    <label class="text-xs font-semibold text-gray-500">Lokasi Penyimpanan <span class="text-red-400">*</span></label>
                                     <input type="text" wire:model="penyimpanan" placeholder="Contoh: Gudang A" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all" />
+                                    @error('penyimpanan') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
                             </div>
                         </div>

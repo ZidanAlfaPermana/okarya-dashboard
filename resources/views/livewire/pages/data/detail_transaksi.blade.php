@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                @if(strtolower($pembayaran->status) === 'pending' && strtolower($pembayaran->metode_pembayaran) == "cash")
+                                @if($pembayaran->status === 'pending' && $pembayaran->payment_type === "cash")
                                     <button wire:click="batalkanTransaksi" class="px-4 py-2 text-xs font-bold text-red-600 border border-red-200 bg-red-50 rounded-xl hover:bg-red-100 transition-colors">
                                         Batalkan Transaksi
                                     </button>

@@ -73,16 +73,16 @@
                                 </svg>
                             </button>
                         </div>
+                        @error('form.password')
+                        <p class="text-sm text-red-600 font-medium">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <button type="submit" class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.98] bg-[#07E200]">
-                        <div wire:loading.remove class="flex items-center justify-center gap-2">
-                            <span>Masuk ke Dashboard </span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
-                                 viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                            </svg>
-                        </div>
-                        <span wire:loading class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    <button type="submit" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[.98] bg-[#07E200]">
+                        <span wire:loading.remove>Masuk ke Dashboard</span>
+                        <svg wire:loading.remove class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                        <span wire:loading class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                     </button>
                 </form>
             </div>

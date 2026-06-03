@@ -12,11 +12,21 @@ class Kategori extends Component
 
     public string $search = '';
 
-    public string $status = '';
-
     public function updatingSearch(): void
     {
         $this->resetPage();
+    }
+
+    public function konfirmasiBatal($id_kategori, $nama_kategori)
+    {
+        $this->dispatch('open-confirm',
+            title: 'Hapus Kategori?',
+            message: 'Apakah Anda yakin ingin menghapus kategori '.$nama_kategori.'? Data kategori ini tidak bisa dikembalikan lagi.',
+            type: 'danger',
+            method: 'hapus',
+            params: $id_kategori,
+            componentId: $this->getId()
+        );
     }
 
     public function hapus(string $idKategori, KategoriService $service): void
@@ -35,10 +45,6 @@ class Kategori extends Component
 
         if (! empty($this->search)) {
             $filters['nama_kategori'] = $this->search;
-        }
-
-        if (! empty($this->status)) {
-            $filters['status'] = $this->status;
         }
 
         $response = $kategoriService->getKategori($filters, 10);

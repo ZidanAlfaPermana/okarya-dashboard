@@ -135,8 +135,7 @@
                                         <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
                                             <a href="{{ url('produk/detail/'.$item['kode_barang']) }}" class="flex-1 text-center text-xs font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 py-2 rounded-lg transition-colors">Edit</a>
                                             <button
-                                                wire:click="hapus('{{ $item['id_barang'] }}')"
-                                                wire:confirm="Apakah Anda yakin ingin menghapus produk ini?"
+                                                wire:click="konfirmasiBatal('{{ $item['id_barang'] }}', '{{ $item['nama_barang'] }}')"
                                                 class="flex-1 text-center text-xs font-semibold text-red-500 bg-red-50 hover:bg-red-100 py-2 rounded-lg transition-colors"
                                             >Hapus</button>
                                         </div>
@@ -205,8 +204,7 @@
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                                 </a>
                                                 <button
-                                                    wire:click="hapus('{{ $item['id_barang'] }}')"
-                                                    wire:confirm="Hapus produk ini?"
+                                                    wire:click="konfirmasiBatal('{{ $item['id_barang'] }}', '{{ $item['nama_barang'] }}')"
                                                     class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2" /></svg>
