@@ -18,7 +18,7 @@
 
         <div class="flex items-center justify-between gap-3 px-5 py-5 border-b border-gray-100">
             <div class="flex items-center gap-3">
-                <img src="https://www.smkn5malang.sch.id/storage/img/logo.png" class="w-9 h-9 rounded-xl" alt="">
+                <img src="{{ asset('logo.png') }}" class="w-9 h-9 rounded-xl" alt="">
                 <div>
                     <p class="text-base font-extrabold text-gray-900 leading-tight">OKarya</p>
                     <p class="text-[10px] text-gray-400 leading-tight">Toko karya siswa smkn 5 malang</p>

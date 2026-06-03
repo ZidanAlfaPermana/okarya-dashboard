@@ -35,7 +35,7 @@
 
                 <div class="mt-16 pt-8 border-t border-gray-100">
                     <div class="flex items-center justify-center gap-2">
-                        <img src="https://www.smkn5malang.sch.id/storage/img/logo.png" class="w-6 h-6 grayscale opacity-50" alt="">
+                        <img src="{{ asset('logo.png') }}" class="w-6 h-6 grayscale opacity-50" alt="">
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Okarya System</p>
                     </div>
                 </div>
