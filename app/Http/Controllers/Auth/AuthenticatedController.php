@@ -39,7 +39,7 @@ class AuthenticatedController extends Controller
     public function revokeToken(Request $request)
     {
         try {
-            $request->user()->currentAccessToken()->delete();
+            $request->user()->tokens()->delete();
 
             return response()->json([
                 'message' => 'Token berhasil dihapus (Logout sukses)',
