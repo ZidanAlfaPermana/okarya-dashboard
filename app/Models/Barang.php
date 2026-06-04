@@ -25,7 +25,8 @@ class Barang extends Model
         'qr_code',
         'penyimpanan',
         'rating',
-        'status'
+        'status',
+        'description',
     ];
 
     protected function casts()

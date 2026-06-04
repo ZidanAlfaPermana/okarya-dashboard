@@ -338,7 +338,7 @@
                                         <p class="text-xl font-extrabold text-gray-900">Rp {{ number_format($harga, 0, ',', '.') }}</p>
                                     </div>
 
-                                    <div class="sm:col-span-2 mt-4 pt-4 border-t border-gray-50">
+                                    <div class="sm:col-span-2 mt-3 pt-2 border-t border-gray-50">
                                         <p class="text-xs font-bold text-gray-900 mb-3">Spesifikasi Produk</p>
                                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                             @foreach($specification as $key => $value)
@@ -423,6 +423,31 @@
                         </div>
 
                         <div class="bg-white border border-gray-100 rounded-2xl p-6">
+                            <p class="text-sm font-bold text-gray-900 mb-4">Deskripsi Produk</p>
+                            @if(!$isEditing)
+                                <div wire:loading.flex class="justify-center py-10">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#07E200]"></div>
+                                </div>
+                                <div wire:loading.remove>
+                                    @if($description !== '')
+                                        <p class="text-sm text-gray-900">{{ $description }}</p>
+                                    @else
+                                        <div class="flex flex-col col-span-full pt-10 justify-center items-center text-center gap-2 w-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10 text-gray-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                            </svg>
+                                            <h3 class="col-span-full text-gray-500 text-2xl">Deskripsi Kosong</h3>
+                                            <p class="col-span-full text-gray-400">Produk ini belum memiliki deskripsi.</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <textarea wire:model="description" rows="4" class="w-full px-3.5 py-2.5 resize-none text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all"></textarea>
+                                @error('description') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
+                            @endif
+                        </div>
+
+                        <div class="bg-white border border-gray-100 rounded-2xl p-6">
                             <p class="text-sm font-bold text-gray-900 mb-4">Rating</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div class="bg-gray-50 rounded-xl p-3.5 text-center">
@@ -492,7 +517,6 @@
             </main>
         </div>
     </div>
-    @include('scripts.image_compresor')
     <style>
         .custom-scrollbar::-webkit-scrollbar { height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }

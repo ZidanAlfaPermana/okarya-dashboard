@@ -245,6 +245,17 @@
                                 <div class="sm:col-span-2 mt-6 pt-6 border-t border-gray-100">
                                     <div class="flex items-center justify-between mb-4">
                                         <div>
+                                            <p class="text-xs font-bold text-gray-900">Deskripsi Produk</p>
+                                            <p class="text-[10px] text-gray-400">Penjelasan mengenai produk ini</p>
+                                        </div>
+                                    </div>
+                                    <textarea wire:model="description" class="w-full pl-3.5 pr-3.5 py-2.5 text-sm border resize-none border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all"></textarea>
+                                    @error('description') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div class="sm:col-span-2 mt-6 pt-6 border-t border-gray-100">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
                                             <p class="text-xs font-bold text-gray-900">Spesifikasi Tambahan</p>
                                             <p class="text-[10px] text-gray-400">Atribut kustom (Bahan, Ukuran, Warna, dll)</p>
                                         </div>
@@ -287,7 +298,6 @@
             </main>
         </div>
     </div>
-    @include('scripts.image_compresor')
     <style>
         .custom-scrollbar::-webkit-scrollbar { height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }

@@ -21,6 +21,7 @@ class BarangService
             'kode_barang' => 'required|string|unique:barang,kode_barang'.($isUpdate ? ','.$id.',id_barang' : ''),
             'stok' => 'required|integer|min:1',
             'specification' => 'nullable|array',
+            'description' => 'nullable|string',
             'penyimpanan' => 'required|string|min:3|max:200',
             'status' => 'required|string|in:aktif,nonaktif,draft',
 

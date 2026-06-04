@@ -39,6 +39,7 @@ class Detail extends Component
     public string $namaKategori = '';
 
     public string $penyimpanan = '';
+    public string $description = '';
 
     public string $gambarQrCode = '';
 
@@ -78,7 +79,8 @@ class Detail extends Component
             message: 'Apakah Anda yakin ingin menghapus barang '.$nama_barang.'? Data barang ini tidak bisa dikembalikan lagi.',
             type: 'danger',
             method: 'hapus',
-            params: $id_barang
+            params: $id_barang,
+            componentId: $this->getId()
         );
     }
 
@@ -121,6 +123,7 @@ class Detail extends Component
         $this->harga = (int) ($data->harga ?? 0);
         $this->stok = (int) ($data->stok ?? 0);
         $this->penyimpanan = $data->penyimpanan ?? '';
+        $this->description = $data->description ?? '';
 
         $this->existingGambar = $data->gambar ? $data->gambar->toArray() : [];
 
@@ -191,6 +194,7 @@ class Detail extends Component
                 'id_kategori' => (int) $this->idKategori,
                 'harga' => (int) $this->harga,
                 'stok' => (int) $this->stok,
+                'description' => $this->description,
                 'penyimpanan' => $this->penyimpanan,
                 'specification' => $formattedSpecs,
                 'status' => $this->status ?: 'aktif',
@@ -211,7 +215,7 @@ class Detail extends Component
         }
     }
 
-    public function hapus(string $id, BarangService $barangService): void
+    public function hapus(int $id, BarangService $barangService): void
     {
         try {
             $barangService->deleteItem($id);

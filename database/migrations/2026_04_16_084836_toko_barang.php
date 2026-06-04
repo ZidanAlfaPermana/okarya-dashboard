@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('barang', function (Blueprint $table) {
             $table->id('id_barang');
             $table->string('kode_barang')->index();
+            $table->text('description')->nullable();
             $table->longText('qr_code')->nullable();
             $table->foreignId('id_kategori')->nullable()->references('id_kategori')->on('kategori')->nullOnDelete()->cascadeOnUpdate();
             $table->string('nama_barang');

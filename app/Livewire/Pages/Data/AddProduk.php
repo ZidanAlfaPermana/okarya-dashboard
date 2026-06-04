@@ -21,6 +21,7 @@ class AddProduk extends Component
     public $idKategori;
 
     public string $namaKategori = '';
+    public string $description = '';
 
     public string $penyimpanan = '';
 
@@ -89,6 +90,7 @@ class AddProduk extends Component
                 'id_kategori' => (int) $this->idKategori,
                 'harga' => (int) $this->harga,
                 'stok' => (int) $this->stok,
+                'description' => $this->description,
                 'penyimpanan' => $this->penyimpanan,
                 'specification' => $formattedSpecs,
                 'status' => $this->status ?: 'draft',
