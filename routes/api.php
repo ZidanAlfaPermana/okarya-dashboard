@@ -21,6 +21,7 @@ Route::middleware(['throttle:60,1', 'auth:sanctum'])->group(function () {
     Route::get('user/profile', [ProfileController::class, 'getProfile']);
     Route::post('midtrans/charge', [PaymentController::class, 'process']);
     Route::post('midtrans/callback', [PaymentController::class, 'callback']);
+    Route::post('mail', [AuthenticatedController::class, 'mailTesting']);
 });
 
 Route::middleware(['auth:sanctum', 'throttle:60,1', 'ability:customer-okarya'])->group(function () {
@@ -30,7 +31,6 @@ Route::middleware(['auth:sanctum', 'throttle:60,1', 'ability:customer-okarya'])-
     Route::get('kategori', [KategoriController::class, 'index']);
 
     Route::get('rating', [RatingController::class, 'index']);
-    /*Route::get('rating/{id}', [RatingController::class, 'show']);*/
     Route::post('rating', [RatingController::class, 'store']);
     Route::put('rating/{id}', [RatingController::class, 'update']);
 
@@ -43,5 +43,4 @@ Route::middleware(['auth:sanctum', 'throttle:60,1', 'ability:customer-okarya'])-
 
     Route::get('favorite', [FavoriteController::class, 'index']);
     Route::post('favorite', [FavoriteController::class, 'store']);
-    Route::delete('favorite/{id}', [FavoriteController::class, 'destroy']);
 });

@@ -11,15 +11,17 @@ class QRCode extends Component
 {
     public string $search = '';
 
-    public function render(BarangService $service)
+    protected BarangService $service;
+
+    public function render()
     {
         $perPage = 15;
 
         try {
             if (isset($search)) {
-                $data = $service->getDaftarBarang(['only_qr' => true, 'search' => $search]);
+                $data = $this->service->getDaftarBarang(['only_qr' => true, 'search' => $search]);
             } else {
-                $data = $service->getDaftarBarang(['only_qr' => true]);
+                $data = $this->service->getDaftarBarang(['only_qr' => true]);
             }
         } catch (\Exception $e) {
             return view('livewire.pages.qr_code', [

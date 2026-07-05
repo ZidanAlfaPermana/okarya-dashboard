@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -19,17 +19,21 @@ return new class extends Migration
             $table->string('password');
             $table->enum('level', ['admin', 'user', 'upj'])->default('user');
             $table->integer('no_telp')->nullable();
+            $table->string('otp_code')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
+            $table->boolean('account_verified')->default(false);
+            $table->timestamp('last_session')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
+        Schema::create('password_reset_tokens', static function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create('sessions', static function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();

@@ -23,7 +23,6 @@ class KategoriFactory extends Factory
         return [
             'nama_kategori' => $this->faker->unique()->randomElement($daftarKategori),
             'deskripsi' => $this->faker->sentence(10),
-            'status' => $this->faker->randomElement(['aktif', 'nonaktif', 'draft']),
         ];
     }
 }

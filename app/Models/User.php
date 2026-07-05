@@ -19,6 +19,11 @@ class User extends Authenticatable
         'password',
         'level',
         'no_telp',
+        'otp_code',
+        'otp_expires_at',
+        'account_verified',
+        '',
+        'last_session'
     ];
 
     protected $hidden = [
@@ -36,6 +41,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'account_verified' => 'boolean',
+            'last_session' => 'datetime'
         ];
     }
 }

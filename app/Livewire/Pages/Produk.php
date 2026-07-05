@@ -21,6 +21,15 @@ class Produk extends Component
 
     public string $searchBy = 'nama_barang';
 
+    protected BarangService $barangService;
+    protected KategoriService $kategoriService;
+
+    public function boot(): void
+    {
+        $this->barangService = new BarangService();
+        $this->kategoriService = new KategoriService();
+    }
+
     public function mount(): void
     {
         $this->viewMode = session('produk_view_mode', 'card');
@@ -54,17 +63,17 @@ class Produk extends Component
         );
     }
 
-    public function hapus(string $id, BarangService $barangService): void
+    public function hapus(string $id): void
     {
         try {
-            $barangService->deleteItem($id);
+            $this->barangService->deleteItem($id);
             session()->flash('success', 'Produk berhasil dihapus.');
         } catch (\Exception $e) {
             session()->flash('error', 'Gagal menghapus produk. Silakan coba lagi.');
         }
     }
 
-    public function render(BarangService $barangService, KategoriService $kategoriService): View|Factory|\Illuminate\View\View
+    public function render(): View|Factory|\Illuminate\View\View
     {
         $limitPerPage = $this->viewMode === 'card' ? 12 : 15;
 
@@ -78,8 +87,8 @@ class Produk extends Component
             $filters['id_kategori'] = $this->kategori;
         }
 
-        $produkResponse = $barangService->getDaftarBarang($filters, $limitPerPage);
-        $kategoriResponse = $kategoriService->getKategori([], 100);
+        $produkResponse = $this->barangService->getDaftarBarang($filters, $limitPerPage);
+        $kategoriResponse = $this->kategoriService->getKategori([], 100);
 
         return view('livewire.pages.produk', [
             'produk' => $produkResponse['data'],

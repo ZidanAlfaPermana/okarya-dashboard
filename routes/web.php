@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Pages\Account;
+use App\Livewire\Pages\Data\AddAccount;
 use App\Livewire\Pages\Data\AddKategori;
 use App\Livewire\Pages\Data\AddProduk;
 use App\Livewire\Pages\Data\DetailPesanan;
@@ -28,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('pesanan', Pesanan::class)->name('pesanan');
     Route::get('pesanan/detail/{id}', DetailPesanan::class)->name('pesanan.detail');
     Route::get('guide', Guide::class)->name('guide');
+    Route::get('account', Account::class)->name('account');
+    Route::get('account/create', AddAccount::class)->name('account.create');
 });
 
 require __DIR__.'/auth.php';

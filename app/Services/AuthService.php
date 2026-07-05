@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Mail\SendOtpMail;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -71,21 +74,33 @@ class AuthService
 
         $clean = $validator->validated();
 
-        $user = User::create([
+        $user = User::updateOrCreate(['email' => $clean['email']], [
             'name' => $clean['name'],
             'email' => $clean['email'],
             'password' => Hash::make($clean['password']),
         ]);
 
+        if (! $this->createNewOtp($user)) {
+            return [
+                'message' => 'Silahkan Verifikasi lagi',
+                'success' => true,
+            ];
+        }
+
         return [
+            'message' => 'Registrasi berhasil jika sudah verifikasi. udh kekirim ya',
+            'success' => true,
+        ];
+
+        /*return [
             'token' => $this->createToken($user),
             'user' => $user->get(['email', 'name']),
             'message' => 'Registrasi berhasil',
             'success' => true,
-        ];
+        ];*/
     }
 
-    public function revokeToken(User $user)
+    public function revokeToken(User $user): array
     {
         $user->currentAccessToken()->delete();
 
@@ -119,12 +134,46 @@ class AuthService
             ]);
         }
 
-        if ($user->level != config('app.privileges.admin')) {
+        if ($user->level !== config('app.privileges.admin')) {
             throw ValidationException::withMessages([
                 'form.email' => ['Akun anda tidak ditemukan. Hubungi admin jika ini merupakan kesalahan'],
             ]);
         }
 
+        $user->update(['last_session' => Carbon::now()->toDateTimeString()]);
+
         return true;
+    }
+
+    public function createNewOtp(string $email)
+    {
+        $user = User::where('email', $email)->first();
+        if (! $user) {
+            return false;
+        }
+        $is_otp_available = $user->value('otp_code');
+        if ($is_otp_available && $this->isExpired($user->value('otp_expires_at'))) {
+            return false;
+        }
+        $otp = random_int(100000, 999999);
+        $user->update([
+            'otp_code' => $otp,
+            'otp_expires_at' => Carbon::now()->addMinutes(15),
+        ]);
+
+        Mail::to($user->email)->send(new SendOtpMail($otp));
+
+        return true;
+    }
+
+    public function verifyOtp(string $otp)
+    {
+        $otp_user = User::where('otp_code', $otp)->first();
+        return $otp_user && $this->isExpired($otp_user->value('otp_expires_at'));
+    }
+
+    private function isExpired($otp_expires_at): bool
+    {
+        return now()->lessThanOrEqualTo($otp_expires_at);
     }
 }

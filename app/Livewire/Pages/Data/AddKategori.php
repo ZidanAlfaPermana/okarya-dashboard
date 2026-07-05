@@ -14,10 +14,12 @@ class AddKategori extends Component
 
     public string $status = '';
 
-    public function save(KategoriService $kategoriService): void
+    protected KategoriService $service;
+
+    public function save(): void
     {
         try {
-            $kategoriService->createKategori([
+            $this->service->createKategori([
                 'nama_kategori' => $this->nama_kategori,
                 'deskripsi' => $this->deskripsi,
                 'status' => $this->status,

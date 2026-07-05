@@ -13,7 +13,14 @@ class Pesanan extends Component
     public $search = '';
     public $status = 'pending';
 
-    public function render(PembayaranService $service)
+    protected PembayaranService $service;
+
+    public function boot()
+    {
+        $this->service = new PembayaranService();
+    }
+
+    public function render()
     {
         $filters = [];
 
@@ -25,7 +32,7 @@ class Pesanan extends Component
             $filters['status'] = $this->status;
         }
 
-        $data = $service->getPembayaran($filters);
+        $data = $this->service->getPembayaran($filters);
 
         return view('livewire.pages.pesanan', ['pembayaran' => $data['data']]);
     }

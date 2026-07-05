@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('kategori', function (Blueprint $table) {
+        Schema::create('kategori', static function (Blueprint $table) {
             $table->id('id_kategori');
             $table->string('nama_kategori');
             $table->text('deskripsi');
         });
-        Schema::create('barang', function (Blueprint $table) {
+        Schema::create('barang', static function (Blueprint $table) {
             $table->id('id_barang');
             $table->string('kode_barang')->index();
             $table->text('description')->nullable();
@@ -28,18 +28,18 @@ return new class extends Migration {
             $table->enum('status', ['aktif', 'nonaktif', 'draft'])->default('draft');
             $table->timestamps();
         });
-        Schema::create('gambar_barang', function (Blueprint $table) {
+        Schema::create('gambar_barang', static function (Blueprint $table) {
             $table->id('gambar_id');
             $table->foreignId('id_barang')->references('id_barang')->on('barang')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('gambar');
         });
-        Schema::create('cart', function (Blueprint $table) {
+        Schema::create('cart', static function (Blueprint $table) {
             $table->id('id_cart');
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('id_barang')->references('id_barang')->on('barang')->cascadeOnDelete()->cascadeOnUpdate();
             $table->integer('qty');
         });
-        Schema::create('pembayaran', function (Blueprint $table) {
+        Schema::create('pembayaran', static function (Blueprint $table) {
             $table->id('id_pembayaran');
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('kode_transaksi')->unique();
@@ -50,7 +50,7 @@ return new class extends Migration {
             $table->string('snap_token')->nullable();
             $table->timestamps();
         });
-        Schema::create('item_transaction', function (Blueprint $table) {
+        Schema::create('item_transaction', static function (Blueprint $table) {
             $table->id('id_item_transaction');
             $table->foreignId('id_pembayaran')->references('id_pembayaran')->on('pembayaran')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('id_barang')->constrained('barang', 'id_barang')->cascadeOnDelete()->cascadeOnUpdate();
@@ -58,7 +58,7 @@ return new class extends Migration {
             $table->decimal('harga_satuan', 15);
             $table->timestamps();
         });
-        Schema::create('rating', function (Blueprint $table) {
+        Schema::create('rating', static function (Blueprint $table) {
             $table->id('rating_id');
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('id_barang')->references('id_barang')->on('barang')->cascadeOnDelete()->cascadeOnUpdate();
@@ -66,7 +66,7 @@ return new class extends Migration {
             $table->text('keterangan');
             $table->timestamps();
         });
-        Schema::create('favorite', function (Blueprint $table) {
+        Schema::create('favorite', static function (Blueprint $table) {
             $table->id('favorite_id');
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('id_barang')->references('id_barang')->on('barang')->cascadeOnUpdate()->cascadeOnDelete();

@@ -18,16 +18,18 @@ class Kategori extends Component
 
     public string $status = '';
 
-    public function mount(string $id, KategoriService $kategoriService): void
+    protected KategoriService $kategoriService;
+
+    public function mount(string $id): void
     {
         $this->idKategori = (int) $id;
-        $this->loadData($kategoriService);
+        $this->loadData($this->kategoriService);
     }
 
-    private function loadData(KategoriService $kategoriService): void
+    private function loadData(): void
     {
         try {
-            $response = $kategoriService->getKategoriById($this->idKategori);
+            $response = $this->kategoriService->getKategoriById($this->idKategori);
             $kategori = $response['data'];
 
             $this->namaKategori = $kategori->nama_kategori ?? '';
@@ -39,10 +41,10 @@ class Kategori extends Component
         }
     }
 
-    public function save(KategoriService $kategoriService): void
+    public function save(): void
     {
         try {
-            $kategoriService->updateKategori($this->idKategori, [
+            $this->kategoriService->updateKategori($this->idKategori, [
                 'nama_kategori' => $this->namaKategori,
                 'deskripsi' => $this->deskripsiKategori,
                 'status' => $this->status,
@@ -57,10 +59,10 @@ class Kategori extends Component
         }
     }
 
-    public function hapus(string $id, KategoriService $kategoriService): void
+    public function hapus(string $id): void
     {
         try {
-            $kategoriService->deleteKategori($id);
+            $this->kategoriService->deleteKategori($id);
             session()->flash('success', 'Kategori dihapus.');
             $this->redirect('/kategori', navigate: true);
         } catch (\Exception $e) {

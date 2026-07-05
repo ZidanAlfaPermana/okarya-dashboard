@@ -51,6 +51,11 @@ class Barang extends Model
         return $this->hasMany(Gambar::class, 'id_barang');
     }
 
+    public function gambarUtama()
+    {
+        return $this->hasOne(Gambar::class, 'id_barang')->oldestOfMany('gambar_id');
+    }
+
     protected function qrCodeFullUrl(): Attribute
     {
         return Attribute::make(

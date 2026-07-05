@@ -22,7 +22,7 @@ class Authenticated extends Component
             $service->login([
                 'email' => $this->form->email,
                 'password' => $this->form->password,
-            ]);
+            ], true);
         } catch (ValidationException $e) {
             $this->setErrorBag($e->validator->getMessageBag());
 

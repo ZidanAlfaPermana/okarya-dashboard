@@ -41,9 +41,12 @@ class AddProduk extends Component
 
     public array $specification = [];
 
-    public function mount(KategoriService $kategoriService): void
+    protected KategoriService $kategoriService;
+    protected BarangService $barangService;
+
+    public function mount(): void
     {
-        $response = $kategoriService->getKategori([], 99999);
+        $response = $this->kategoriService->getKategori([], 99999);
         $this->kategoriList = $response['data']->items();
     }
 
@@ -74,7 +77,7 @@ class AddProduk extends Component
         $this->gambarUploads = [];
     }
 
-    public function save(BarangService $barangService): void
+    public function save(): void
     {
         $formattedSpecs = [];
         foreach ($this->specList as $spec) {
@@ -84,7 +87,7 @@ class AddProduk extends Component
         }
 
         try {
-            $barangService->createItem([
+            $this->barangService->createItem([
                 'nama_barang' => $this->nama,
                 'kode_barang' => $this->kodeBarang,
                 'id_kategori' => (int) $this->idKategori,

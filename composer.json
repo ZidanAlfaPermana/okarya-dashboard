@@ -17,6 +17,7 @@
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^3.6.4",
         "livewire/volt": "^1.7.0",
+        "railsware/mailtrap-php": "^3.12",
         "simplesoftwareio/simple-qrcode": "^4.2"
     },
     "require-dev": {

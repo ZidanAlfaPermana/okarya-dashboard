@@ -23,17 +23,7 @@
                     <span class="text-gray-600 font-medium">Bantuan</span>
                 </div>
 
-                <div class="bg-[#07E200] rounded-3xl p-6 sm:p-10 relative overflow-hidden flex flex-col items-center text-center">
-                    <div class="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-                    <div class="absolute bottom-0 right-0 w-64 h-64 bg-black opacity-10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
-
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white relative z-10">Halo, Selamat datang di Bantuan Dashboard</h1>
-                    <p class="text-white/80 mt-2 mb-8 relative z-10 max-w-lg text-sm sm:text-base">
-                        Temukan panduan lengkap untuk menggunakan seluruh fitur di sistem dashboard.
-                    </p>
-                </div>
-
-                <div class="pt-2">
+                <div class="">
                     <h2 class="text-lg font-bold text-gray-900 mb-4">Pilih Topik Panduan</h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

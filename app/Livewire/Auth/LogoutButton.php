@@ -31,6 +31,6 @@ class LogoutButton extends Component
 
     public function render()
     {
-        return view('livewire.auth.logout-button');
+        return view('livewire.pages.auth.logout-button');
     }
 }

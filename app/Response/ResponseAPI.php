@@ -7,13 +7,14 @@ use Illuminate\Http\JsonResponse;
 trait ResponseAPI
 {
     const int DEFAULT_DATA_LIMIT_PER_PAGE = 10;
+
     public function successResponse(mixed $data, string $message, int $code = 200): JsonResponse
     {
         return response()->json([
             'data' => $data,
             'message' => $message,
             'code' => $code < 200 || $code > 299 ? 200 : $code,
-            'success' => true
+            'success' => true,
         ], $code);
     }
 
@@ -24,7 +25,7 @@ trait ResponseAPI
             'error' => $error,
             'message' => $message,
             'code' => $code < 300 || $code > 599 ? 400 : $code,
-            'success' => false
+            'success' => false,
         ], $code);
     }
 

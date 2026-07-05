@@ -54,7 +54,7 @@ class KategoriService
         $kategori = Kategori::find($id);
 
         if (! $kategori) {
-            throw new \Exception('Data kategori tidak ditemukan', 404);
+            throw new \RuntimeException('Data kategori tidak ditemukan', 404);
         }
 
         return [
@@ -74,7 +74,7 @@ class KategoriService
         $kategori = Kategori::find($id);
 
         if (! $kategori) {
-            throw new \Exception('Data kategori tidak ditemukan', 404);
+            throw new \RuntimeException('Data kategori tidak ditemukan', 404);
         }
 
         $kategori->update($validator->validated());
@@ -90,7 +90,7 @@ class KategoriService
         $kategori = Kategori::find($id);
 
         if (! $kategori) {
-            throw new \Exception('Data kategori tidak ditemukan', 404);
+            throw new \RuntimeException('Data kategori tidak ditemukan', 404);
         }
 
         $kategori->delete();

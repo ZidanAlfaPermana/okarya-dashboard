@@ -9,35 +9,37 @@ class DetailPesanan extends Component
 {
     public string $kodeTransaksi;
 
+    protected PembayaranService $pembayaranService;
+
     public function mount(string $id): void
     {
         $this->kodeTransaksi = $id;
     }
 
-    public function konfirmasiPembayaran(PembayaranService $pembayaranService): void
+    public function konfirmasiPembayaran(): void
     {
         try {
-            $pembayaranService->updateStatus($pembayaranService->getPembayaranIDFromKodeTransaksi($this->kodeTransaksi), ['status' => 'settlement']);
+            $this->pembayaranService->updateStatus($this->pembayaranService->getPembayaranIDFromKodeTransaksi($this->kodeTransaksi), ['status' => 'settlement']);
             session()->flash('success', 'Pembayaran tunai berhasil dikonfirmasi.');
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
         }
     }
 
-    public function batalkanTransaksi(PembayaranService $pembayaranService): void
+    public function batalkanTransaksi(): void
     {
         try {
-            $pembayaranService->updateStatus($pembayaranService->getPembayaranIDFromKodeTransaksi($this->kodeTransaksi), ['status' => 'cancel']);
+            $this->pembayaranService->updateStatus($this->pembayaranService->getPembayaranIDFromKodeTransaksi($this->kodeTransaksi), ['status' => 'cancel']);
             session()->flash('success', 'Transaksi berhasil dibatalkan.');
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
         }
     }
 
-    public function render(PembayaranService $pembayaranService)
+    public function render()
     {
         try {
-            $response = $pembayaranService->getPembayaranById($pembayaranService->getPembayaranIDFromKodeTransaksi($this->kodeTransaksi));
+            $response = $this->pembayaranService->getPembayaranById($this->pembayaranService->getPembayaranIDFromKodeTransaksi($this->kodeTransaksi));
             $pembayaran = $response['data']->load(['item.barang', 'user']);
         } catch (\Exception $e) {
             session()->flash('error', 'Transaksi tidak ditemukan.');

@@ -27,7 +27,7 @@ class CartController extends Controller
     {
         try {
             $userId = $request->user()->id;
-            $carts = $this->cart::with('barang')->whereUserId($userId)->paginate($this->getDefaultDataLimitPerPage());
+            $carts = $this->cart::with(['barang', 'barang.gambarUtama'])->whereUserId($userId)->paginate($this->getDefaultDataLimitPerPage());
 
             return $this->successResponse($carts, 'Data cart berhasil diambil');
         } catch (\Exception) {

@@ -83,7 +83,7 @@ class PembayaranService
         $pembayaran = Pembayaran::whereIdPembayaran($id)->first();
 
         if (! $pembayaran) {
-            throw new \Exception('Data pembayaran tidak ditemukan', 404);
+            throw new \RuntimeException('Data pembayaran tidak ditemukan', 404);
         }
 
         return [
@@ -103,11 +103,11 @@ class PembayaranService
         $pembayaran = Pembayaran::where('id_pembayaran', $id)->first();
 
         if (! $pembayaran) {
-            throw new \Exception('Data pembayaran tidak ditemukan', 404);
+            throw new \RuntimeException('Data pembayaran tidak ditemukan', 404);
         }
 
         if ($pembayaran->status === 'settlement') {
-            throw new \Exception('Transaksi sudah lunas dan tidak bisa diubah statusnya', 403);
+            throw new \RuntimeException('Transaksi sudah lunas dan tidak bisa diubah statusnya', 403);
         }
 
         $pembayaran->update([
@@ -125,7 +125,7 @@ class PembayaranService
         $pembayaran = Pembayaran::where('id_pembayaran', $id)->first();
 
         if (! $pembayaran) {
-            throw new \Exception('Data pembayaran tidak ditemukan', 404);
+            throw new \RuntimeException('Data pembayaran tidak ditemukan', 404);
         }
 
         $pembayaran->delete();
@@ -140,7 +140,7 @@ class PembayaranService
     {
         $kode = Pembayaran::whereKodeTransaksi($kode_transaksi)->first();
         if (! $kode) {
-            throw new \Exception('Data pembayaran tidak ditemukan', 404);
+            throw new \RuntimeException('Data pembayaran tidak ditemukan', 404);
         }
 
         return $kode->id_pembayaran;

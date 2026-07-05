@@ -3,6 +3,7 @@
 namespace App\Livewire\Pages;
 
 use App\Services\KategoriService;
+use App\Services\PembayaranService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -11,6 +12,13 @@ class Kategori extends Component
     use WithPagination;
 
     public string $search = '';
+
+    protected KategoriService $service;
+
+    public function boot(): void
+    {
+        $this->service = new KategoriService();
+    }
 
     public function updatingSearch(): void
     {
@@ -29,17 +37,17 @@ class Kategori extends Component
         );
     }
 
-    public function hapus(string $idKategori, KategoriService $service): void
+    public function hapus(string $idKategori): void
     {
         try {
-            $service->deleteKategori($idKategori);
+            $this->service->deleteKategori($idKategori);
             session()->flash('success', 'Kategori berhasil dihapus.');
         } catch (\Exception) {
             session()->flash('failed', 'Gagal menghapus kategori');
         }
     }
 
-    public function render(KategoriService $kategoriService)
+    public function render()
     {
         $filters = [];
 
@@ -47,7 +55,7 @@ class Kategori extends Component
             $filters['nama_kategori'] = $this->search;
         }
 
-        $response = $kategoriService->getKategori($filters, 10);
+        $response = $this->service->getKategori($filters, 10);
 
         return view('livewire.pages.kategori', [
             'kategori' => $response['data'],

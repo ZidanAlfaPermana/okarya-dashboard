@@ -59,11 +59,14 @@ class Detail extends Component
 
     public array $specification = [];
 
-    public function mount(string $id, KategoriService $kategoriService, BarangService $barangService): void
+    protected KategoriService $kategoriService;
+    protected BarangService $barangService;
+
+    public function mount(string $id): void
     {
         $this->kodeBarang = $id;
-        $this->loadKategori($kategoriService);
-        $this->loadProduk($barangService);
+        $this->loadKategori();
+        $this->loadProduk();
     }
 
     public function changeImageMode(string $mode): void
@@ -84,9 +87,9 @@ class Detail extends Component
         );
     }
 
-    private function loadKategori(KategoriService $kategoriService): void
+    private function loadKategori(): void
     {
-        $response = $kategoriService->getKategori([], 100);
+        $response = $this->kategoriService->getKategori([], 100);
 
         $this->kategoriList = collect($response['data']->items())->toArray();
     }
@@ -106,9 +109,9 @@ class Detail extends Component
         $this->existingGambar = array_values($this->existingGambar);
     }
 
-    private function loadProduk(BarangService $barangService): void
+    private function loadProduk(): void
     {
-        $response = $barangService->getDaftarBarang(['kode_barang' => $this->kodeBarang], 1);
+        $response = $this->barangService->getDaftarBarang(['kode_barang' => $this->kodeBarang], 1);
         $data = $response['data']->first();
 
         if (! $data) {
@@ -161,7 +164,7 @@ class Detail extends Component
         $this->specList = array_values($this->specList);
     }
 
-    public function setMode(string $mode, BarangService $barangService): void
+    public function setMode(string $mode): void
     {
         if ($mode === 'edit') {
             $this->isEditing = true;
@@ -170,11 +173,11 @@ class Detail extends Component
             $this->resetValidation();
             $this->gambar = [];
             $this->hapusGambarIds = [];
-            $this->loadProduk($barangService);
+            $this->loadProduk();
         }
     }
 
-    public function save(BarangService $barangService): void
+    public function save(): void
     {
         $formattedSpecs = [];
         foreach ($this->specList as $spec) {
@@ -185,10 +188,10 @@ class Detail extends Component
 
         try {
             foreach ($this->hapusGambarIds as $idHapus) {
-                $barangService->deleteGambarSingle($idHapus);
+                $this->barangService->deleteGambarSingle($idHapus);
             }
 
-            $barangService->updateItem($this->idBarang, [
+            $this->barangService->updateItem($this->idBarang, [
                 'nama_barang' => $this->nama,
                 'kode_barang' => $this->kodeBarang,
                 'id_kategori' => (int) $this->idKategori,
@@ -215,10 +218,10 @@ class Detail extends Component
         }
     }
 
-    public function hapus(int $id, BarangService $barangService): void
+    public function hapus(int $id): void
     {
         try {
-            $barangService->deleteItem($id);
+            $this->barangService->deleteItem($id);
             session()->flash('success', 'Produk dihapus.');
             $this->redirect('/produk', navigate: true);
         } catch (\Exception $e) {
