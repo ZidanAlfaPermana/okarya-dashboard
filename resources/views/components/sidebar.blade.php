@@ -125,8 +125,7 @@
 
         <div class="px-4 py-4 border-t border-gray-100">
             <div class="flex items-center gap-3">
-                <div
-                    class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold bg-[#07E200]"> {{ auth()->user()->name[0] }} </div>
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold bg-[#07E200]"> {{ auth()->user()->name[0] }} </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->name }}</p>
                     <p class="text-[11px] text-gray-400 truncate">{{ auth()->user()->email }}</p>

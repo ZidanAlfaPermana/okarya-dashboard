@@ -11,6 +11,11 @@ class DetailPesanan extends Component
 
     protected PembayaranService $pembayaranService;
 
+    public function boot(): void
+    {
+        $this->pembayaranService = new PembayaranService();
+    }
+
     public function mount(string $id): void
     {
         $this->kodeTransaksi = $id;

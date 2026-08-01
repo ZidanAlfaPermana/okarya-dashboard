@@ -16,6 +16,11 @@ class AddKategori extends Component
 
     protected KategoriService $service;
 
+    public function boot(): void
+    {
+        $this->service = new KategoriService();
+    }
+
     public function save(): void
     {
         try {

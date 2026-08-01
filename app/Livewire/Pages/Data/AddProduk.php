@@ -44,6 +44,12 @@ class AddProduk extends Component
     protected KategoriService $kategoriService;
     protected BarangService $barangService;
 
+    public function boot(): void
+    {
+        $this->kategoriService = new KategoriService();
+        $this->barangService = new BarangService();
+    }
+
     public function mount(): void
     {
         $response = $this->kategoriService->getKategori([], 99999);

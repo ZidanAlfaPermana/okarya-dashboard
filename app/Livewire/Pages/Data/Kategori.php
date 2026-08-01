@@ -20,6 +20,11 @@ class Kategori extends Component
 
     protected KategoriService $kategoriService;
 
+    public function boot(): void
+    {
+        $this->kategoriService = new KategoriService();
+    }
+
     public function mount(string $id): void
     {
         $this->idKategori = (int) $id;

@@ -59,7 +59,7 @@
 
                     <select wire:model.live="level" class="text-sm border border-gray-200 rounded-xl bg-gray-50 px-3 py-2.5 outline-none focus:border-[#07E200] sm:w-44">
                         <option value="user">User</option>
-                        <option value="psj">PSJ</option>
+                        <option value="upj">UPJ</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>

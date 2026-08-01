@@ -19,8 +19,6 @@ class Produk extends Component
 
     public string $kategori = '';
 
-    public string $searchBy = 'nama_barang';
-
     protected BarangService $barangService;
     protected KategoriService $kategoriService;
 
@@ -78,10 +76,6 @@ class Produk extends Component
         $limitPerPage = $this->viewMode === 'card' ? 12 : 15;
 
         $filters = [];
-
-        if (! empty($this->search)) {
-            $filters[$this->searchBy] = $this->search;
-        }
 
         if (! empty($this->kategori)) {
             $filters['id_kategori'] = $this->kategori;

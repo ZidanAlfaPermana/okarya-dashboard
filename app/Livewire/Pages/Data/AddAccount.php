@@ -14,10 +14,19 @@ class AddAccount extends Component
 
     public string $password = '';
     public string $verifyPassword = '';
+    public int $telp = 0;
+    public array $access = [
+        ""
+    ];
 
-    public string $level = 'admin';
+    public string $level = 'user';
 
     protected AccountService $service;
+
+    public function boot(): void
+    {
+        $this->service = new AccountService();
+    }
 
     public function save(): void
     {
@@ -40,6 +49,6 @@ class AddAccount extends Component
 
     public function render()
     {
-        return view('livewire.pages.data.add_kategori');
+        return view('livewire.pages.data.add_account');
     }
 }
