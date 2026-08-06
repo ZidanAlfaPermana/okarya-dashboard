@@ -15,15 +15,11 @@
             </header>
 
             <main class="flex-1 p-4 sm:p-6 space-y-6">
-                <x-message_notification></x-message_notification>
+                {{--<x-message_notification></x-message_notification>--}}
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-2 text-xs text-gray-400">
                         <a href="{{ route('welcome') }}" class="hover:text-gray-600 transition-colors">Dashboard</a>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                        <p class="text-gray-600">Management</p>
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>

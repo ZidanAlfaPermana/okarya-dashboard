@@ -10,6 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+<x-pop_up />
 {{ $slot }}
 <x-confirmation_modal />
 </body>

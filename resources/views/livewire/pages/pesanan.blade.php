@@ -16,7 +16,6 @@
             </header>
 
             <main class="flex-1 p-4 sm:p-6 space-y-6">
-                <x-message_notification></x-message_notification>
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-2 text-xs text-gray-400">

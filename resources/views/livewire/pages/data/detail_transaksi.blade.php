@@ -14,7 +14,6 @@
                 </div>
             </header>
             <main class="flex-1 p-4 sm:p-6 space-y-6">
-                <x-message_notification></x-message_notification>
                 @if(!empty($pembayaran))
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div class="flex items-center gap-4">

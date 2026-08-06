@@ -14,7 +14,6 @@
                 </div>
             </header>
             <main class="flex-1 p-4 sm:p-6 space-y-6">
-               <x-message_notification></x-message_notification>
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
@@ -23,7 +22,7 @@
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
-                            <a href="{{ route('produk') }}" class="hover:text-gray-600 transition-colors">Management Account</a>
+                            <a href="{{ route('account') }}" class="hover:text-gray-600 transition-colors">Account</a>
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <polyline points="9 18 15 12 9 6" />
                             </svg>
@@ -48,7 +47,7 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                     <div class="space-y-4">
-                        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm" x-data="{ activeIndex: 0 }">
+                        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm sticky top-[70px]" x-data="{ activeIndex: 0 }">
                             <div class="flex flex-col items-center w-full mb-5">
                                 <div class="w-20 h-20 rounded-full flex items-center justify-center text-white text-[35px] font-bold bg-[#07E200] mb-3">
                                     <span x-text="$wire.name[0] || '?'"></span>
@@ -71,7 +70,7 @@
                                 </div>
                                 <hr class="border-gray-100 mb-4">
                                 <h2 class="text-md font-bold text-gray-800">Hak Akses</h2>
-                                <div class="flex flex-col space-y-4 w-full h-[270px] overflow-y-auto pr-2 custom-scrollbar">
+                                <div class="flex flex-col space-y-4 w-full h-[280px] overflow-y-auto pr-2 custom-scrollbar">
                                     <div class="flex flex-col pb-3 border-b border-gray-100 last:border-0">
                                         <div class="flex justify-between items-center w-full mb-2">
                                             <span class="text-sm font-semibold text-gray-800">Manajemen Produk</span>
@@ -207,10 +206,10 @@
                                 <div class="sm:col-span-2 space-y-1.5">
                                     <label class="text-xs font-semibold text-gray-600">User Role <span class="text-red-400">*</span></label>
                                     <select wire:model="role" class="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-800 outline-none focus:border-[#07E200] focus:ring-2 focus:ring-[#07E200]/20 focus:bg-white transition-all">
-                                        <option value="">Pilih Jabatan</option>
+                                        <option value="">Pilih Role</option>
                                         <option value="admin">Administrator</option>
-                                        <option value="staff">Staff Operasional</option>
-                                        <option value="viewer">Viewer / Guest</option>
+                                        <option value="upj">UPJ</option>
+                                        <option value="user">Customer</option>
                                     </select>
                                     @error('role') <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>
@@ -275,6 +274,64 @@
                                                     <input type="checkbox" wire:model="privilege.kategori.delete" x-model="canDelete" :checked="mainAkses || canDelete" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
                                                     <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Delete</span>
                                                 </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="border border-gray-100 rounded-xl overflow-hidden" x-data="{ mainAkses: false, canCreate: false, canRead: false, canUpdate: false, canDelete: false }">
+                                            <div class="flex items-center justify-between p-3.5 bg-gray-50 border-b border-gray-100">
+                                                <span class="text-sm font-semibold text-gray-800">Manajemen Pesanan</span>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" wire:model="privilege.pesanan.main" x-model="mainAkses" class="sr-only peer">
+                                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#07E200]"></div>
+                                                    <span class="ml-2 text-xs font-bold" :class="mainAkses ? 'text-[#07E200]' : 'text-gray-500'" x-text="mainAkses ? 'Akses Penuh' : 'Atur Manual'"></span>
+                                                </label>
+                                            </div>
+                                            <div class="p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white">
+                                                <label class="flex items-center space-x-2" :class="mainAkses ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'">
+                                                    <input type="checkbox" wire:model="privilege.kategori.create" x-model="canCreate" :checked="mainAkses || canCreate" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
+                                                    <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Create</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2" :class="mainAkses ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'">
+                                                    <input type="checkbox" wire:model="privilege.kategori.read" x-model="canRead" :checked="mainAkses || canRead" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
+                                                    <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Read</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2" :class="mainAkses ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'">
+                                                    <input type="checkbox" wire:model="privilege.kategori.update" x-model="canUpdate" :checked="mainAkses || canUpdate" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
+                                                    <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Update</span>
+                                                </label>
+                                                {{--<label class="flex items-center space-x-2 cursor-not-allowed select-none">
+                                                    <input type="checkbox" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200 cursor-not-allowed">
+                                                    <span class="text-xs font-medium">Delete</span>
+                                                </label>--}}
+                                            </div>
+                                        </div>
+
+                                        <div class="border border-gray-100 rounded-xl overflow-hidden" x-data="{ mainAkses: false, canCreate: false, canRead: false, canUpdate: false, canDelete: false }">
+                                            <div class="flex items-center justify-between p-3.5 bg-gray-50 border-b border-gray-100">
+                                                <span class="text-sm font-semibold text-gray-800">Manajemen Akun</span>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" wire:model="privilege.akun.main" x-model="mainAkses" class="sr-only peer">
+                                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#07E200]"></div>
+                                                    <span class="ml-2 text-xs font-bold" :class="mainAkses ? 'text-[#07E200]' : 'text-gray-500'" x-text="mainAkses ? 'Akses Penuh' : 'Atur Manual'"></span>
+                                                </label>
+                                            </div>
+                                            <div class="p-4 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white">
+                                                <label class="flex items-center space-x-2" :class="mainAkses ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'">
+                                                    <input type="checkbox" wire:model="privilege.kategori.create" x-model="canCreate" :checked="mainAkses || canCreate" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
+                                                    <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Create</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2" :class="mainAkses ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'">
+                                                    <input type="checkbox" wire:model="privilege.kategori.read" x-model="canRead" :checked="mainAkses || canRead" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
+                                                    <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Read</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2" :class="mainAkses ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'">
+                                                    <input type="checkbox" wire:model="privilege.kategori.update" x-model="canUpdate" :checked="mainAkses || canUpdate" :disabled="mainAkses" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200">
+                                                    <span class="text-xs font-medium" :class="mainAkses ? 'text-gray-500' : 'text-gray-700'">Update</span>
+                                                </label>
+                                                {{--<label class="flex items-center space-x-2 cursor-not-allowed select-none">
+                                                    <input type="checkbox" class="w-4 h-4 accent-[#07E200] rounded border-gray-300 disabled:bg-gray-200 cursor-not-allowed">
+                                                    <span class="text-xs font-medium">Delete</span>
+                                                </label>--}}
                                             </div>
                                         </div>
                                     </div>

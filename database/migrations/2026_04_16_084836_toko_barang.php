@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->id('id_kategori');
             $table->string('nama_kategori');
             $table->text('deskripsi');
+            $table->timestamps();
         });
         Schema::create('barang', static function (Blueprint $table) {
             $table->id('id_barang');
@@ -38,6 +39,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('id_barang')->references('id_barang')->on('barang')->cascadeOnDelete()->cascadeOnUpdate();
             $table->integer('qty');
+            $table->timestamps();
         });
         Schema::create('pembayaran', static function (Blueprint $table) {
             $table->id('id_pembayaran');
@@ -70,6 +72,7 @@ return new class extends Migration {
             $table->id('favorite_id');
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('id_barang')->references('id_barang')->on('barang')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
